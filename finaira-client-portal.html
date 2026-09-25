@@ -1,0 +1,2402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Finaira — Client Portal · Mehta Industries</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+/* ═══════════════════════════════════════════════
+   DESIGN TOKENS (from design-tokens.md)
+═══════════════════════════════════════════════ */
+:root {
+  --n50:  #F7F8FA; --n100: #DADEE6; --n200: #A8B0BF;
+  --n300: #98A1B3; --n400: #7A8499; --n500: #606B80;
+  --n600: #475166; --n700: #323B4D; --n900: #1F2633;
+  --p50:  #EFF6FF; --p600: #2563EB; --p700: #4F46E5;
+  --s400: #22C55E; --s600: #16A34A;
+  --w400: #EAB308; --w600: #CA8A04;
+  --d400: #EF4444;
+  --a400: #F97316; --a500: #EA580C;
+  --purple: #A855F7; --indigo: #6366F1; --cyan: #06B6D4;
+  --card: #FFFFFF; --page: #F7F8FA;
+  --border: #DADEE6;
+  --sh-sm: 0 1px 4px rgba(96,107,128,.05);
+  --sh-md: 0 1px 5px rgba(96,107,128,.10);
+  --sh-lg: 0 4px 32px rgba(96,107,128,.20);
+  --r-sm:2px; --r-md:4px; --r-lg:6px; --r-xl:8px; --r-full:9999px;
+  --nav-h: 72px; --sb-w: 220px;
+  --dur-fast:150ms; --dur-norm:250ms; --dur-slow:400ms;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;font-size:14px;background:var(--page);color:var(--n900);line-height:1.5;overflow:hidden;height:100vh;}
+button{cursor:pointer;border:none;background:none;font-family:inherit;}
+a{text-decoration:none;color:inherit;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--n100);border-radius:3px;}
+
+/* ═══════════════════════════════════════════════
+   APP SHELL
+═══════════════════════════════════════════════ */
+.app{display:flex;height:100vh;overflow:hidden;}
+
+/* SIDEBAR */
+.sidebar{width:var(--sb-w);min-width:var(--sb-w);background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:width var(--dur-norm),min-width var(--dur-norm);overflow:hidden;z-index:50;box-shadow:var(--sh-sm);flex-shrink:0;}
+.sb-logo{height:var(--nav-h);display:flex;align-items:center;padding:0 18px;border-bottom:1px solid var(--border);gap:10px;overflow:hidden;flex-shrink:0;}
+.logo-mark{width:32px;height:32px;background:linear-gradient(135deg,#2563EB,#4F46E5);border-radius:var(--r-lg);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 1px 4px rgba(37,99,235,.3);}
+.logo-mark svg{width:16px;height:16px;fill:white;}
+.logo-txt{font-size:18px;font-weight:800;color:var(--n900);white-space:nowrap;letter-spacing:-.4px;}
+.logo-sub{font-size:10px;font-weight:500;color:var(--n400);text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;}
+.sb-client-card{margin:12px 10px;background:var(--p50);border:1px solid rgba(37,99,235,.15);border-radius:var(--r-xl);padding:10px 12px;}
+.sb-client-name{font-size:12px;font-weight:700;color:var(--n900);margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sb-client-gstin{font-size:10px;color:var(--n400);font-family:monospace;}
+.sb-client-ca{font-size:11px;color:var(--n600);margin-top:5px;display:flex;align-items:center;gap:5px;}
+.sb-client-ca::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--s400);flex-shrink:0;}
+.sb-nav{flex:1;padding:8px 0;overflow-y:auto;overflow-x:hidden;}
+.sb-section{font-size:11px;font-weight:600;color:var(--n300);text-transform:uppercase;letter-spacing:.08em;padding:8px 18px 3px;white-space:nowrap;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 18px;color:var(--n600);font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap;transition:background var(--dur-fast),color var(--dur-fast);position:relative;overflow:hidden;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover{background:var(--n50);color:var(--n900);}
+.nav-item.active{background:var(--p50);color:var(--p600);font-weight:600;}
+.nav-item.active::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;background:var(--p600);border-radius:0 2px 2px 0;}
+.nav-ic{width:20px;height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.nav-ic svg{width:20px;height:20px;}
+.nav-badge{margin-left:auto;background:var(--d400);color:white;font-size:11px;font-weight:700;padding:1px 6px;border-radius:var(--r-full);min-width:18px;text-align:center;}
+.nav-badge.warn{background:var(--a400);}
+.nav-badge.info{background:var(--p600);}
+.sb-foot{padding:10px 0;border-top:1px solid var(--border);}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+/* TOPNAV */
+.topnav{height:var(--nav-h);background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:14px;flex-shrink:0;box-shadow:var(--sh-sm);z-index:40;}
+.tn-title{font-size:16px;font-weight:600;color:var(--n900);}
+.tn-sub{font-size:12px;color:var(--n400);}
+.tn-sep{flex:1;}
+.bell-btn{position:relative;width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-lg);cursor:pointer;transition:background var(--dur-fast);color:var(--n500);border:none;background:none;}
+.bell-btn:hover{background:var(--n50);color:var(--n700);}
+.bell-btn svg{width:20px;height:20px;}
+.bell-dot{position:absolute;top:7px;right:7px;width:8px;height:8px;background:var(--d400);border-radius:var(--r-full);border:2px solid var(--card);}
+.user-av{width:34px;height:34px;border-radius:var(--r-full);background:linear-gradient(135deg,var(--a400),var(--a500));display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;border:2px solid var(--border);}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:20px;}
+
+/* SCREEN VISIBILITY */
+.screen{display:none;}
+.screen.active{display:flex;flex-direction:column;flex:1;overflow:hidden;}
+
+/* ═══════════════════════════════════════════════
+   SHARED COMPONENTS
+═══════════════════════════════════════════════ */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:var(--r-full);font-size:11px;font-weight:500;white-space:nowrap;}
+.badge.critical{background:rgba(239,68,68,.1);color:var(--d400);}
+.badge.high{background:rgba(249,115,22,.1);color:var(--a500);}
+.badge.medium{background:rgba(234,179,8,.1);color:var(--w600);}
+.badge.low{background:rgba(34,197,94,.1);color:var(--s600);}
+.badge.success{background:rgba(34,197,94,.1);color:var(--s600);}
+.badge.primary{background:var(--p50);color:var(--p600);}
+.badge.neutral{background:var(--n50);color:var(--n600);border:1px solid var(--border);}
+.badge.purple{background:rgba(168,85,247,.1);color:var(--purple);}
+.badge.warn-fill{background:rgba(234,179,8,.12);color:var(--w600);border:1px solid rgba(234,179,8,.25);}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--r-lg);font-size:13px;font-weight:600;cursor:pointer;transition:all var(--dur-fast);border:none;white-space:nowrap;}
+.btn-primary{background:var(--p600);color:white;box-shadow:0 1px 4px rgba(37,99,235,.2);}
+.btn-primary:hover{background:#1d4ed8;transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,99,235,.35);}
+.btn-secondary{background:var(--card);color:var(--n700);border:1px solid var(--border);}
+.btn-secondary:hover{background:var(--n50);border-color:var(--n200);}
+.btn-success{background:rgba(34,197,94,.1);color:var(--s600);border:1px solid rgba(34,197,94,.2);}
+.btn-success:hover{background:rgba(34,197,94,.18);}
+.btn-warn{background:rgba(249,115,22,.1);color:var(--a500);border:1px solid rgba(249,115,22,.2);}
+.btn-warn:hover{background:rgba(249,115,22,.18);}
+.btn svg{width:15px;height:15px;}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);box-shadow:var(--sh-sm);}
+.card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.card-title{font-size:15px;font-weight:600;color:var(--n900);display:flex;align-items:center;gap:7px;}
+.card-title svg{width:17px;height:17px;color:var(--p600);}
+.section-heading{font-size:18px;font-weight:700;color:var(--n900);}
+.section-sub{font-size:13px;color:var(--n400);margin-top:2px;}
+.avatar{border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;flex-shrink:0;}
+
+.status-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:var(--r-full);font-size:11px;font-weight:500;}
+.status-pill::before{content:'';width:5px;height:5px;border-radius:50%;}
+.status-pill.awaiting{background:rgba(249,115,22,.08);color:var(--a500);}
+.status-pill.awaiting::before{background:var(--a400);}
+.status-pill.responded{background:rgba(37,99,235,.08);color:var(--p600);}
+.status-pill.responded::before{background:var(--p600);}
+.status-pill.in-review{background:rgba(168,85,247,.08);color:var(--purple);}
+.status-pill.in-review::before{background:var(--purple);}
+.status-pill.done{background:rgba(34,197,94,.08);color:var(--s600);}
+.status-pill.done::before{background:var(--s400);}
+
+/* ═══════════════════════════════════════════════
+   DASHBOARD SCREEN
+═══════════════════════════════════════════════ */
+.greeting-row{display:flex;justify-content:space-between;align-items:flex-start;}
+.greeting h1{font-size:22px;font-weight:700;color:var(--n900);line-height:1.25;}
+.greeting p{font-size:13px;color:var(--n400);margin-top:3px;}
+.greeting-date{font-size:12px;color:var(--n400);text-align:right;line-height:1.7;}
+.greeting-date strong{color:var(--n700);font-weight:600;display:block;}
+
+/* Status Banner */
+.status-banner{background:linear-gradient(135deg,#0f2444 0%,#1a3560 50%,#0f1e42 100%);border-radius:var(--r-xl);padding:20px 24px;display:flex;align-items:flex-start;gap:18px;box-shadow:var(--sh-lg);position:relative;isolation:isolate;}
+.status-banner::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;background:rgba(37,99,235,.15);border-radius:50%;pointer-events:none;z-index:-1;}
+.status-banner::after{content:'';position:absolute;bottom:-60px;right:100px;width:180px;height:180px;background:rgba(99,102,241,.1);border-radius:50%;pointer-events:none;z-index:-1;}
+.sb-icon{width:46px;height:46px;border-radius:var(--r-full);background:rgba(37,99,235,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;margin-top:2px;}
+.sb-icon::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(37,99,235,.4);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.15);opacity:.5;}}
+.sb-icon svg{width:22px;height:22px;color:#93c5fd;}
+.sb-content{flex:1;z-index:1;}
+.sb-content h3{font-size:15px;font-weight:700;color:white;margin-bottom:4px;}
+.sb-content p{font-size:12px;color:rgba(255,255,255,.7);line-height:1.5;}
+.sb-content p strong{color:#fbbf24;font-weight:600;}
+.sb-tags{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap;}
+.sb-tag{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);font-size:11px;font-weight:500;padding:3px 9px;border-radius:var(--r-full);border:1px solid rgba(255,255,255,.15);}
+.sb-tag.warn{background:rgba(234,179,8,.15);color:#fde68a;border-color:rgba(234,179,8,.25);}
+.sb-tag.danger{background:rgba(239,68,68,.15);color:#fca5a5;border-color:rgba(239,68,68,.25);}
+.sb-actions{display:flex;gap:8px;flex-shrink:0;z-index:1;flex-direction:column;}
+.btn-white{background:rgba(255,255,255,.12);color:rgba(255,255,255,.9);font-size:12px;font-weight:600;padding:8px 16px;border-radius:var(--r-lg);cursor:pointer;border:1px solid rgba(255,255,255,.2);transition:all var(--dur-fast);white-space:nowrap;}
+.btn-white:hover{background:rgba(255,255,255,.2);}
+
+/* Metrics grid */
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.metric-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);padding:18px;box-shadow:var(--sh-sm);transition:box-shadow var(--dur-fast),transform var(--dur-fast);}
+.metric-card:hover{box-shadow:var(--sh-md);transform:translateY(-1px);}
+.metric-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.metric-lbl{font-size:12px;font-weight:500;color:var(--n400);}
+.metric-ic{width:30px;height:30px;border-radius:var(--r-lg);display:flex;align-items:center;justify-content:center;}
+.metric-ic svg{width:15px;height:15px;}
+.metric-ic.d{background:rgba(239,68,68,.1);color:var(--d400);}
+.metric-ic.w{background:rgba(234,179,8,.1);color:var(--w600);}
+.metric-ic.s{background:rgba(34,197,94,.1);color:var(--s600);}
+.metric-ic.p{background:var(--p50);color:var(--p600);}
+.metric-val{font-size:26px;font-weight:700;color:var(--n900);line-height:1.1;margin-bottom:4px;}
+.metric-val.d{color:var(--d400);}
+.metric-val.s{color:var(--s600);}
+.metric-val.a{color:var(--a500);}
+.metric-sub{font-size:11px;color:var(--n400);}
+
+/* Risk Trend */
+.risk-trend-wrap{display:grid;grid-template-columns:1fr 340px;gap:14px;align-items:start;}
+.risk-chart-area{padding:20px;}
+.risk-legend{display:flex;gap:14px;margin-bottom:16px;flex-wrap:wrap;}
+.rl-item{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:500;color:var(--n600);}
+.rl-dot{width:8px;height:8px;border-radius:50%;}
+.risk-svg-wrap{position:relative;width:100%;overflow:hidden;}
+.risk-svg-wrap svg{display:block;width:100%;}
+.risk-x-labels{display:flex;justify-content:space-between;padding:4px 0 0;font-size:10px;color:var(--n400);}
+
+.risk-side{display:flex;flex-direction:column;gap:12px;}
+.risk-score-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);padding:18px;box-shadow:var(--sh-sm);}
+.rsc-label{font-size:11px;font-weight:600;color:var(--n400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;}
+.rsc-gauge{position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+.rsc-score{font-size:32px;font-weight:800;color:var(--a500);}
+.rsc-score span{font-size:14px;font-weight:500;color:var(--n400);}
+.risk-breakdown{display:flex;flex-direction:column;gap:8px;}
+.rb-row{display:flex;align-items:center;gap:10px;font-size:12px;}
+.rb-label{width:80px;color:var(--n600);flex-shrink:0;}
+.rb-bar{flex:1;height:6px;background:var(--n50);border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--border);}
+.rb-fill{height:100%;border-radius:var(--r-sm);}
+.rb-val{width:28px;text-align:right;font-weight:600;color:var(--n700);flex-shrink:0;}
+
+/* Timeline card */
+.tl-card-list{display:flex;flex-direction:column;}
+.tl-item{display:flex;gap:12px;padding:10px 0;position:relative;}
+.tl-item:not(:last-child){border-bottom:1px solid var(--border);}
+.tl-dot{width:28px;height:28px;border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.tl-dot svg{width:13px;height:13px;}
+.tl-dot.p{background:var(--p50);color:var(--p600);}
+.tl-dot.s{background:rgba(34,197,94,.1);color:var(--s600);}
+.tl-dot.w{background:rgba(234,179,8,.1);color:var(--w600);}
+.tl-dot.d{background:rgba(239,68,68,.1);color:var(--d400);}
+.tl-text{font-size:13px;font-weight:500;color:var(--n900);margin-bottom:2px;}
+.tl-sub{font-size:11px;color:var(--n400);}
+
+/* Upcoming deadlines */
+.deadline-list{display:flex;flex-direction:column;}
+.dl-item{display:flex;align-items:center;gap:12px;padding:11px 18px;cursor:pointer;transition:background var(--dur-fast);border-bottom:1px solid var(--border);}
+.dl-item:last-child{border-bottom:none;}
+.dl-item:hover{background:var(--n50);}
+.dl-bar{width:3px;height:34px;border-radius:var(--r-sm);flex-shrink:0;}
+.dl-bar.c{background:var(--d400);}
+.dl-bar.h{background:var(--a400);}
+.dl-bar.m{background:var(--w400);}
+.dl-info{flex:1;min-width:0;}
+.dl-title{font-size:13px;font-weight:500;color:var(--n900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;}
+.dl-sub{font-size:11px;color:var(--n400);}
+.dl-date{font-size:11px;font-weight:600;color:var(--n700);text-align:right;white-space:nowrap;flex-shrink:0;line-height:1.4;}
+.dl-date.overdue{color:var(--d400);}
+.dl-date.soon{color:var(--a500);}
+
+/* ═══════════════════════════════════════════════
+   INBOX SCREEN
+═══════════════════════════════════════════════ */
+.inbox-layout{display:flex;flex:1;overflow:hidden;}
+.inbox-left{width:320px;min-width:320px;border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--card);}
+.inbox-header{padding:16px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.inbox-header h2{font-size:16px;font-weight:700;color:var(--n900);}
+.inbox-header p{font-size:12px;color:var(--n400);margin-top:2px;}
+.inbox-search-wrap{padding:10px 12px;border-bottom:1px solid var(--border);}
+.inbox-search{display:flex;align-items:center;gap:7px;background:var(--n50);border:1px solid var(--border);border-radius:var(--r-lg);padding:7px 11px;}
+.inbox-search input{border:none;background:none;outline:none;font-family:inherit;font-size:12px;color:var(--n700);width:100%;}
+.inbox-search input::placeholder{color:var(--n300);}
+.inbox-search svg{width:14px;height:14px;color:var(--n300);flex-shrink:0;}
+.msg-list{flex:1;overflow-y:auto;}
+.msg-item{padding:12px 14px;cursor:pointer;transition:background var(--dur-fast);border-bottom:1px solid var(--border);}
+.msg-item:hover{background:var(--n50);}
+.msg-item.active{background:var(--p50);}
+.msg-item.unread .msg-sender{font-weight:700;}
+.msg-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;}
+.msg-sender{font-size:13px;font-weight:500;color:var(--n900);}
+.msg-time{font-size:10px;color:var(--n400);}
+.msg-preview{font-size:12px;color:var(--n500);margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.msg-footer{display:flex;align-items:center;gap:6px;}
+.unread-dot{width:7px;height:7px;border-radius:50%;background:var(--p600);flex-shrink:0;}
+
+.inbox-right{flex:1;display:flex;flex-direction:column;background:var(--page);}
+.chat-header{height:64px;background:var(--card);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.chat-av{width:36px;height:36px;border-radius:var(--r-full);background:linear-gradient(135deg,var(--p600),var(--indigo));display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:700;flex-shrink:0;}
+.chat-name{font-size:14px;font-weight:600;color:var(--n900);}
+.chat-status{font-size:11px;color:var(--n400);display:flex;align-items:center;gap:4px;}
+.chat-status::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--s400);}
+.chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;}
+.msg-bubble-wrap{display:flex;gap:8px;align-items:flex-end;}
+.msg-bubble-wrap.client{flex-direction:row-reverse;}
+.bubble-av{width:28px;height:28px;border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;flex-shrink:0;}
+.msg-bubble{max-width:65%;padding:10px 14px;border-radius:var(--r-xl);font-size:13px;line-height:1.5;}
+.msg-bubble.firm{background:var(--card);border:1px solid var(--border);color:var(--n800);border-bottom-left-radius:var(--r-sm);}
+.msg-bubble.client-msg{background:var(--p600);color:white;border-bottom-right-radius:var(--r-sm);}
+.bubble-meta{font-size:10px;color:var(--n400);margin-top:3px;}
+.bubble-meta.client-meta{text-align:right;color:rgba(255,255,255,.6);}
+.msg-divider{text-align:center;font-size:11px;color:var(--n400);padding:4px 0;position:relative;}
+.msg-divider::before,.msg-divider::after{content:'';position:absolute;top:50%;width:calc(50% - 60px);height:1px;background:var(--border);}
+.msg-divider::before{left:0;}.msg-divider::after{right:0;}
+.chat-input-area{padding:14px 16px;border-top:1px solid var(--border);background:var(--card);}
+.chat-input-row{display:flex;gap:8px;align-items:flex-end;}
+.chat-input{flex:1;border:1px solid var(--border);border-radius:var(--r-xl);padding:10px 14px;font-family:inherit;font-size:13px;color:var(--n700);background:var(--page);outline:none;resize:none;transition:border-color var(--dur-fast);line-height:1.5;max-height:100px;}
+.chat-input:focus{border-color:var(--p600);}
+.chat-send{width:38px;height:38px;border-radius:var(--r-full);background:var(--p600);display:flex;align-items:center;justify-content:center;color:white;cursor:pointer;flex-shrink:0;transition:all var(--dur-fast);}
+.chat-send:hover{background:#1d4ed8;transform:scale(1.05);}
+.chat-send svg{width:16px;height:16px;}
+.chat-attach{width:34px;height:34px;border-radius:var(--r-full);background:var(--n50);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--n500);cursor:pointer;flex-shrink:0;transition:all var(--dur-fast);}
+.chat-attach:hover{background:var(--n100);color:var(--n700);}
+.chat-attach svg{width:15px;height:15px;}
+.inbox-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--n400);}
+.inbox-empty svg{width:48px;height:48px;opacity:.3;}
+.inbox-empty p{font-size:13px;}
+
+/* ═══════════════════════════════════════════════
+   TASKS SCREEN — TABLE LAYOUT
+═══════════════════════════════════════════════ */
+.tasks-header-bar{padding:16px 24px;border-bottom:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.tasks-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);}
+.tasks-tab{padding:10px 20px;font-size:13px;font-weight:500;color:var(--n500);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all var(--dur-fast);display:flex;align-items:center;gap:7px;}
+.tasks-tab:hover{color:var(--n900);}
+.tasks-tab.active{color:var(--p600);border-bottom-color:var(--p600);font-weight:600;}
+.tasks-tab-wrap{padding:0 24px;background:var(--card);border-bottom:1px solid var(--border);flex-shrink:0;}
+
+.task-table-wrap{flex:1;overflow-y:auto;}
+.task-table{width:100%;border-collapse:collapse;}
+.task-table th{padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--n400);text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid var(--border);background:var(--n50);white-space:nowrap;position:sticky;top:0;z-index:2;}
+.task-table td{padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.task-table tr:hover td{background:var(--n50);}
+.task-table tr{cursor:pointer;transition:background var(--dur-fast);}
+.tt-title{font-size:13px;font-weight:600;color:var(--n900);}
+.tt-sub{font-size:11px;color:var(--n500);margin-top:2px;}
+.priority-dot{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;}
+.priority-dot::before{content:'';width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.priority-dot.c::before{background:var(--d400);}
+.priority-dot.h::before{background:var(--a400);}
+.priority-dot.m::before{background:var(--w400);}
+.priority-dot.l::before{background:var(--s400);}
+.priority-dot.c{color:var(--d400);}
+.priority-dot.h{color:var(--a500);}
+.priority-dot.m{color:var(--w600);}
+.priority-dot.l{color:var(--s600);}
+.due-date{font-size:12px;color:var(--n600);}
+.due-date.overdue{color:var(--d400);font-weight:600;}
+.due-date.soon{color:var(--a500);font-weight:500;}
+.assignee-cell{display:flex;align-items:center;gap:7px;}
+.assignee-av{width:26px;height:26px;border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;flex-shrink:0;}
+.assignee-name{font-size:12px;color:var(--n700);}
+.task-tab-content{display:none;}
+.task-tab-content.active{display:flex;flex-direction:column;flex:1;overflow:hidden;}
+
+/* TASK DETAIL — side panel layout */
+.task-detail-wrap{display:none;flex:1;overflow:hidden;}
+.task-detail-wrap.active{display:grid;grid-template-columns:1fr 300px;height:100%;overflow:hidden;}
+.td-main{overflow-y:auto;padding:24px;}
+.td-side{border-left:1px solid var(--border);overflow-y:auto;background:var(--n50);}
+.td-breadcrumb{font-size:12px;color:var(--n400);margin-bottom:10px;display:flex;align-items:center;gap:5px;}
+.td-breadcrumb span{cursor:pointer;color:var(--p600);}
+.td-breadcrumb span:hover{text-decoration:underline;}
+.td-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;}
+.td-title{font-size:20px;font-weight:700;color:var(--n900);line-height:1.3;}
+.td-meta-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.td-section{margin-bottom:22px;}
+.td-section-title{font-size:12px;font-weight:600;color:var(--n400);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.td-desc{font-size:13px;color:var(--n700);line-height:1.65;}
+.td-side-section{padding:16px;border-bottom:1px solid var(--border);}
+.tds-title{font-size:11px;font-weight:600;color:var(--n400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+.tds-val{font-size:13px;font-weight:500;color:var(--n900);}
+.tds-val.overdue{color:var(--d400);}
+.tds-val.soon{color:var(--a500);}
+.tds-val.success{color:var(--s600);}
+
+/* Comment / activity section */
+.td-timeline{display:flex;flex-direction:column;gap:0;}
+.tl-item-d{display:flex;gap:12px;padding:8px 0;position:relative;}
+.tl-item-d:not(:last-child)::after{content:'';position:absolute;left:11px;top:28px;bottom:-4px;width:1px;background:var(--n100);}
+.tl-dot-d{width:24px;height:24px;border-radius:var(--r-full);background:var(--n100);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.tl-dot-d svg{width:12px;height:12px;color:var(--n400);}
+.tl-dot-d.p{background:var(--p50);}
+.tl-dot-d.p svg{color:var(--p600);}
+.tl-dot-d.s{background:rgba(34,197,94,.1);}
+.tl-dot-d.s svg{color:var(--s600);}
+.tl-dot-d.w{background:rgba(234,179,8,.1);}
+.tl-dot-d.w svg{color:var(--w600);}
+.tl-dot-d.a{background:rgba(249,115,22,.1);}
+.tl-dot-d.a svg{color:var(--a500);}
+.tl-text-d{font-size:12px;color:var(--n700);}
+.tl-time-d{font-size:11px;color:var(--n400);margin-top:1px;}
+
+/* Comments */
+.comment-wrap{padding:14px 16px;border-top:1px solid var(--border);background:var(--card);}
+.comment-input-row{display:flex;gap:8px;align-items:flex-end;}
+.comment-input{flex:1;border:1px solid var(--border);border-radius:var(--r-lg);padding:8px 12px;font-family:inherit;font-size:13px;color:var(--n700);background:var(--page);outline:none;resize:none;transition:border-color var(--dur-fast);line-height:1.5;max-height:80px;}
+.comment-input:focus{border-color:var(--p600);}
+.comment-send{width:36px;height:36px;border-radius:var(--r-full);background:var(--p600);display:flex;align-items:center;justify-content:center;color:white;cursor:pointer;flex-shrink:0;transition:all var(--dur-fast);}
+.comment-send:hover{background:#1d4ed8;transform:scale(1.05);}
+.comment-send svg{width:14px;height:14px;}
+.comment-item{display:flex;gap:10px;margin-bottom:14px;}
+.comment-av-sm{width:28px;height:28px;border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;flex-shrink:0;}
+.comment-body{background:var(--n50);border:1px solid var(--border);border-radius:var(--r-xl);padding:10px 13px;flex:1;}
+.comment-meta{font-size:11px;font-weight:600;color:var(--n700);margin-bottom:4px;}
+.comment-text{font-size:12px;color:var(--n600);line-height:1.5;}
+
+/* Awaiting banner in detail */
+.awaiting-banner{background:rgba(249,115,22,.05);border:1px solid rgba(249,115,22,.2);border-radius:var(--r-xl);padding:14px 16px;margin-bottom:14px;}
+.awb-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.awb-icon{width:28px;height:28px;border-radius:var(--r-full);background:rgba(249,115,22,.12);display:flex;align-items:center;justify-content:center;color:var(--a500);flex-shrink:0;}
+.awb-icon svg{width:14px;height:14px;}
+.awb-title{font-size:13px;font-weight:600;color:var(--a500);}
+.awb-body{font-size:12px;color:var(--n600);line-height:1.5;margin-bottom:10px;}
+.docs-required{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.doc-req-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--n700);}
+.doc-req-item::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--a400);flex-shrink:0;}
+
+/* Upload area in detail */
+.upload-zone{border:1.5px dashed var(--n100);border-radius:var(--r-xl);padding:16px;text-align:center;cursor:pointer;transition:all var(--dur-fast);background:var(--n50);}
+.upload-zone:hover{border-color:var(--p600);background:var(--p50);}
+.upload-zone svg{width:24px;height:24px;color:var(--n300);margin-bottom:6px;}
+.upload-zone p{font-size:12px;color:var(--n400);}
+.upload-zone span{font-size:11px;color:var(--n300);}
+.uploaded-files{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
+.uploaded-file{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);}
+.uf-icon{width:28px;height:28px;border-radius:var(--r-md);background:var(--p50);display:flex;align-items:center;justify-content:center;color:var(--p600);flex-shrink:0;}
+.uf-icon svg{width:14px;height:14px;}
+.uf-name{flex:1;font-size:12px;font-weight:500;color:var(--n900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.uf-size{font-size:11px;color:var(--n400);flex-shrink:0;}
+.uf-remove{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--n400);cursor:pointer;flex-shrink:0;}
+.uf-remove:hover{background:var(--n50);color:var(--d400);}
+.uf-remove svg{width:12px;height:12px;}
+
+/* Detail field grid */
+.detail-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.detail-field-d{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px;}
+.detail-field-d label{font-size:11px;font-weight:500;color:var(--n400);display:block;margin-bottom:4px;}
+.df-val-d{font-size:13px;font-weight:500;color:var(--n900);}
+.df-val-d.danger{color:var(--d400);}
+.df-val-d.success{color:var(--s600);}
+.ca-contact-d{display:flex;align-items:center;gap:9px;margin-top:4px;}
+.ca-av-d{width:32px;height:32px;border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:700;flex-shrink:0;}
+.ca-info-d .name{font-size:13px;font-weight:600;color:var(--n900);}
+.ca-info-d .role{font-size:11px;color:var(--n400);}
+
+/* Task side panel - kept for compatibility */
+.tc-side{display:flex;flex-direction:column;gap:12px;}
+.tc-side-section{background:var(--n50);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px;}
+.tss-label{font-size:11px;font-weight:600;color:var(--n400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+.tss-val{font-size:13px;font-weight:500;color:var(--n900);}
+.tss-val.overdue{color:var(--d400);}
+.tss-val.soon{color:var(--a500);}
+.ca-contact{display:flex;align-items:center;gap:9px;margin-top:4px;}
+.ca-av{width:32px;height:32px;border-radius:var(--r-full);background:linear-gradient(135deg,#EF4444,#DC2626);display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:700;flex-shrink:0;}
+.ca-info .name{font-size:13px;font-weight:600;color:var(--n900);}
+.ca-info .role{font-size:11px;color:var(--n400);}
+
+/* Task Activity */
+.task-activity{padding:14px 18px;border-top:1px solid var(--border);background:var(--n50);}
+.ta-title{font-size:11px;font-weight:600;color:var(--n400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+.ta-list{display:flex;flex-direction:column;gap:8px;}
+.ta-item{display:flex;gap:8px;align-items:flex-start;}
+.ta-dot{width:6px;height:6px;border-radius:50%;background:var(--n200);flex-shrink:0;margin-top:5px;}
+.ta-text{font-size:12px;color:var(--n600);}
+.ta-time{font-size:10px;color:var(--n400);}
+
+/* ═══════════════════════════════════════════════
+   NOTICES SCREEN
+═══════════════════════════════════════════════ */
+.notices-layout{display:flex;flex:1;overflow:hidden;}
+.notices-left{width:340px;min-width:340px;border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--card);}
+.notices-header{padding:16px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;}
+.notices-header h2{font-size:16px;font-weight:700;color:var(--n900);}
+.notices-header p{font-size:12px;color:var(--n400);margin-top:2px;}
+.notice-list{flex:1;overflow-y:auto;}
+.notice-item{padding:14px 16px;cursor:pointer;transition:background var(--dur-fast);border-bottom:1px solid var(--border);}
+.notice-item:hover{background:var(--n50);}
+.notice-item.active{background:var(--p50);}
+.ni-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px;}
+.ni-title{font-size:13px;font-weight:600;color:var(--n900);line-height:1.3;}
+.ni-date{font-size:10px;color:var(--n400);flex-shrink:0;margin-top:2px;}
+.ni-meta{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-top:6px;}
+.ni-auth{font-size:11px;color:var(--n500);}
+
+.notices-right{flex:1;overflow-y:auto;background:var(--page);}
+.notice-detail{padding:24px;}
+.nd-header{margin-bottom:20px;}
+.nd-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:12px;}
+.nd-title{font-size:20px;font-weight:700;color:var(--n900);line-height:1.3;}
+.nd-actions{display:flex;gap:8px;flex-shrink:0;}
+.nd-meta-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.nd-meta-pill{background:var(--n50);border:1px solid var(--border);border-radius:var(--r-full);padding:3px 10px;font-size:11px;font-weight:500;color:var(--n600);}
+.nd-meta-pill.danger{background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.2);color:var(--d400);}
+.nd-meta-pill.warn{background:rgba(249,115,22,.07);border-color:rgba(249,115,22,.2);color:var(--a500);}
+
+.notice-body-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);padding:18px;margin-bottom:18px;}
+.nbb-label{font-size:11px;font-weight:600;color:var(--n400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;}
+.nbb-text{font-size:13px;color:var(--n700);line-height:1.7;}
+.notice-details-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+.detail-field{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px;}
+.detail-field label{font-size:11px;font-weight:500;color:var(--n400);display:block;margin-bottom:4px;}
+.df-val{font-size:13px;font-weight:500;color:var(--n900);}
+.df-val.danger{color:var(--d400);}
+
+.ca-handling-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);padding:16px;margin-bottom:18px;}
+.chc-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.chc-av{width:36px;height:36px;border-radius:var(--r-full);background:linear-gradient(135deg,#EF4444,#DC2626);display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:700;flex-shrink:0;}
+.chc-name{font-size:13px;font-weight:600;color:var(--n900);}
+.chc-role{font-size:11px;color:var(--n400);}
+.chc-status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--n600);}
+.chc-prog{flex:1;height:5px;background:var(--n50);border:1px solid var(--border);border-radius:var(--r-sm);overflow:hidden;}
+.chc-prog-fill{height:100%;background:var(--p600);border-radius:var(--r-sm);}
+.chc-prog-pct{font-size:11px;font-weight:600;color:var(--p600);flex-shrink:0;}
+
+/* Log Notice Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(31,38,51,.5);z-index:300;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity var(--dur-norm);}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--card);border-radius:var(--r-xl);box-shadow:var(--sh-lg);width:560px;max-height:85vh;overflow-y:auto;transform:translateY(16px);transition:transform var(--dur-norm);display:flex;flex-direction:column;}
+.modal-overlay.open .modal{transform:translateY(0);}
+.modal-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.modal-header h3{font-size:16px;font-weight:700;color:var(--n900);}
+.modal-close{width:32px;height:32px;border-radius:var(--r-lg);display:flex;align-items:center;justify-content:center;color:var(--n400);cursor:pointer;transition:all var(--dur-fast);}
+.modal-close:hover{background:var(--n50);color:var(--n700);}
+.modal-close svg{width:16px;height:16px;}
+.modal-body{padding:20px 24px;flex:1;}
+.form-group{margin-bottom:16px;}
+.form-label{font-size:12px;font-weight:600;color:var(--n700);display:block;margin-bottom:6px;}
+.form-label span{color:var(--d400);}
+.form-input{width:100%;border:1px solid var(--border);border-radius:var(--r-lg);padding:9px 12px;font-family:inherit;font-size:13px;color:var(--n700);background:var(--card);outline:none;transition:border-color var(--dur-fast);}
+.form-input:focus{border-color:var(--p600);}
+.form-select{width:100%;border:1px solid var(--border);border-radius:var(--r-lg);padding:9px 12px;font-family:inherit;font-size:13px;color:var(--n700);background:var(--card);outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237A8499' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+.form-select:focus{border-color:var(--p600);outline:none;}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.modal-upload-zone{border:1.5px dashed var(--n100);border-radius:var(--r-xl);padding:20px;text-align:center;cursor:pointer;transition:all var(--dur-fast);background:var(--n50);}
+.modal-upload-zone:hover{border-color:var(--p600);background:var(--p50);}
+.modal-upload-zone svg{width:28px;height:28px;color:var(--n300);margin-bottom:8px;}
+.modal-upload-zone p{font-size:13px;color:var(--n500);margin-bottom:3px;}
+.modal-upload-zone span{font-size:11px;color:var(--n400);}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0;}
+
+/* ═══════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════ */
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:400;display:flex;flex-direction:column;gap:8px;}
+.toast{background:var(--n900);color:white;padding:12px 18px;border-radius:var(--r-xl);font-size:13px;font-weight:500;box-shadow:var(--sh-lg);display:flex;align-items:center;gap:8px;animation:slideInToast var(--dur-norm) ease-out;max-width:340px;}
+.toast.success{background:var(--s600);}
+.toast.warn{background:var(--a500);}
+.toast svg{width:15px;height:15px;flex-shrink:0;}
+@keyframes slideInToast{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+/* Notices empty state */
+.notices-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:var(--n400);}
+.notices-empty svg{width:52px;height:52px;opacity:.25;}
+.notices-empty h3{font-size:15px;font-weight:600;color:var(--n600);}
+.notices-empty p{font-size:13px;color:var(--n400);text-align:center;max-width:300px;line-height:1.5;}
+
+/* ═══════════════════════════════════════════════
+   INVOICES SCREEN
+═══════════════════════════════════════════════ */
+.inv-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:24px 24px 0;}
+.inv-metric{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);padding:20px 22px;box-shadow:var(--sh-sm);text-align:center;}
+.inv-metric-val{font-size:26px;font-weight:800;margin-bottom:4px;line-height:1.1;}
+.inv-metric-val.green{color:var(--s600);}
+.inv-metric-val.orange{color:var(--a500);}
+.inv-metric-val.red{color:var(--d400);}
+.inv-metric-lbl{font-size:12px;color:var(--n400);font-weight:500;}
+
+.inv-body{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:22px;}
+
+.inv-filter-row{display:flex;gap:7px;flex-wrap:wrap;}
+.inv-chip{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:var(--r-full);font-size:12px;font-weight:500;color:var(--n600);background:var(--card);border:1px solid var(--border);cursor:pointer;transition:all var(--dur-fast);}
+.inv-chip:hover{background:var(--n50);border-color:var(--n200);}
+.inv-chip.active{background:var(--p50);color:var(--p600);border-color:rgba(37,99,235,.3);font-weight:600;}
+
+.inv-section-label{font-size:13px;font-weight:700;color:var(--n700);margin-bottom:10px;}
+
+/* Retainer card — dark style matching screenshot */
+.retainer-card{background:linear-gradient(135deg,#0f2444 0%,#1a3560 60%,#0f2a50 100%);border-radius:var(--r-xl);padding:20px 24px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;position:relative;overflow:hidden;box-shadow:var(--sh-lg);}
+.retainer-card::before{content:'';position:absolute;top:-50px;right:-50px;width:160px;height:160px;background:rgba(37,99,235,.12);border-radius:50%;}
+.retainer-card::after{content:'';position:absolute;bottom:-60px;left:60px;width:140px;height:140px;background:rgba(99,102,241,.08);border-radius:50%;}
+.rc-left{z-index:1;}
+.rc-title{font-size:16px;font-weight:700;color:white;margin-bottom:3px;}
+.rc-sub{font-size:12px;color:rgba(255,255,255,.55);margin-bottom:14px;}
+.rc-next{font-size:12px;color:rgba(255,255,255,.6);}
+.rc-right{z-index:1;text-align:right;flex-shrink:0;}
+.rc-amount{font-size:28px;font-weight:800;color:white;line-height:1.1;margin-bottom:3px;}
+.rc-freq{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:10px;}
+.rc-status{display:inline-flex;align-items:center;gap:5px;background:rgba(34,197,94,.2);color:#6ee7b7;border:1px solid rgba(34,197,94,.3);border-radius:var(--r-full);padding:4px 12px;font-size:11px;font-weight:700;}
+.rc-status::before{content:'';width:6px;height:6px;border-radius:50%;background:#6ee7b7;}
+
+/* Task invoice card */
+.task-inv-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);box-shadow:var(--sh-sm);overflow:hidden;transition:box-shadow var(--dur-fast);}
+.task-inv-card:hover{box-shadow:var(--sh-md);}
+.tic-header{padding:18px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:14px;}
+.tic-left{}
+.tic-inv-no{font-size:14px;font-weight:700;color:var(--n900);margin-bottom:3px;}
+.tic-dates{font-size:12px;color:var(--n500);margin-bottom:0;}
+.tic-right{text-align:right;flex-shrink:0;}
+.tic-amount{font-size:22px;font-weight:800;color:var(--n900);line-height:1.1;margin-bottom:3px;}
+.tic-incl{font-size:11px;color:var(--n400);margin-bottom:6px;}
+.tic-status{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:var(--r-full);font-size:11px;font-weight:700;}
+.tic-status.pending{background:rgba(234,179,8,.12);color:var(--w600);border:1px solid rgba(234,179,8,.25);}
+.tic-status.paid{background:rgba(34,197,94,.1);color:var(--s600);border:1px solid rgba(34,197,94,.2);}
+.tic-status.overdue{background:rgba(239,68,68,.1);color:var(--d400);border:1px solid rgba(239,68,68,.2);}
+.tic-divider{height:1px;background:var(--border);margin:0 20px;}
+.tic-footer{padding:13px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.tic-tasks{display:flex;gap:7px;flex-wrap:wrap;}
+.tic-task-link{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:var(--r-full);font-size:11px;font-weight:600;background:var(--p50);color:var(--p600);border:1px solid rgba(37,99,235,.2);cursor:pointer;transition:all var(--dur-fast);}
+.tic-task-link:hover{background:rgba(37,99,235,.1);}
+.tic-task-link svg{width:11px;height:11px;}
+.tic-breakdown{font-size:11px;color:var(--n400);}
+.tic-download{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r-lg);font-size:12px;font-weight:600;color:var(--p600);background:var(--p50);border:1px solid rgba(37,99,235,.2);cursor:pointer;transition:all var(--dur-fast);white-space:nowrap;}
+.tic-download:hover{background:rgba(37,99,235,.1);transform:translateY(-1px);}
+.tic-download svg{width:13px;height:13px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ══════════════════════════════════════
+       SIDEBAR
+  ══════════════════════════════════════ -->
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <img src="logo.png" alt="Finaira" style="height:36px;width:auto;object-fit:contain;" />
+    </div>
+
+    <div class="sb-client-card">
+      <div class="sb-client-name">Mehta Industries Pvt. Ltd.</div>
+      <div class="sb-client-gstin">27AABCM3767H1ZD</div>
+      <div class="sb-client-ca">Assigned CA: Priya Kumar</div>
+    </div>
+
+    <nav class="sb-nav">
+      <div class="sb-section">Main</div>
+      <button class="nav-item active" data-screen="dashboard" onclick="nav('dashboard',this)">
+        <span class="nav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+        Dashboard
+      </button>
+      <button class="nav-item" data-screen="inbox" onclick="nav('inbox',this)">
+        <span class="nav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
+        Inbox
+        <span class="nav-badge info">3</span>
+      </button>
+      <button class="nav-item" data-screen="tasks" onclick="nav('tasks',this)">
+        <span class="nav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></span>
+        Tasks
+        <span class="nav-badge warn">2</span>
+      </button>
+      <button class="nav-item" data-screen="notices" onclick="nav('notices',this)">
+        <span class="nav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>
+        Notices
+        <span class="nav-badge">1</span>
+      </button>
+      <button class="nav-item" data-screen="invoices" onclick="nav('invoices',this)">
+        <span class="nav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span>
+        Invoices
+        <span class="nav-badge warn">1</span>
+      </button>
+    </nav>
+
+    <div class="sb-foot">
+      <button class="nav-item" onclick="showToast('Settings coming soon','info')">
+        <span class="nav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M12 2v2M12 20v2M20 12h2M2 12h2"/></svg></span>
+        Settings
+      </button>
+      <button class="nav-item" onclick="showToast('You have been logged out','success')">
+        <span class="nav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
+        Logout
+      </button>
+    </div>
+  </aside>
+
+  <!-- ══════════════════════════════════════
+       MAIN
+  ══════════════════════════════════════ -->
+  <div class="main">
+    <div class="topnav">
+      <div>
+        <div class="tn-title" id="pageTitle">Dashboard</div>
+        <div class="tn-sub">Finaira · Client Portal</div>
+      </div>
+      <div class="tn-sep"></div>
+      <button class="bell-btn" onclick="showToast('No new notifications','info')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <div class="bell-dot"></div>
+      </button>
+      <div class="user-av" title="Rakesh Mehta">RM</div>
+    </div>
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="screen active content" id="screen-dashboard">
+
+      <!-- Greeting -->
+      <div class="greeting-row">
+        <div class="greeting">
+          <h1>Good morning, Rakesh 👋</h1>
+          <p>Here's your compliance overview for Mehta Industries</p>
+        </div>
+        <div class="greeting-date">
+          <strong>Thursday, 2 April 2026</strong>
+          FY 2025–26 · Q4
+        </div>
+      </div>
+
+      <!-- Status Banner -->
+      <div class="status-banner">
+        <div class="sb-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div class="sb-content">
+          <h3>2 tasks need your attention right now</h3>
+          <p>Your CA <strong>Priya Kumar</strong> is awaiting documentation for <strong>GSTR-9 Annual Return</strong> and <strong>GST SCN Response</strong>. Responding promptly helps meet your deadlines and avoid penalties.</p>
+          <div class="sb-tags">
+            <span class="sb-tag danger">GSTR-9 · Due Apr 5</span>
+            <span class="sb-tag warn">SCN Response · Due Apr 2</span>
+            <span class="sb-tag">Priya Kumar assigned</span>
+          </div>
+        </div>
+        <div class="sb-actions">
+          <button class="btn btn-primary btn-ai" onclick="nav('tasks',document.querySelector('[data-screen=tasks]'))">View Tasks →</button>
+          <button class="btn-white btn" onclick="nav('inbox',document.querySelector('[data-screen=inbox]'))">Message CA</button>
+        </div>
+      </div>
+
+      <!-- Metrics -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-head">
+            <div class="metric-lbl">Pending Tasks</div>
+            <div class="metric-ic w"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+          </div>
+          <div class="metric-val a">4</div>
+          <div class="metric-sub">2 awaiting your docs</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-head">
+            <div class="metric-lbl">Active Notices</div>
+            <div class="metric-ic d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+          </div>
+          <div class="metric-val d">1</div>
+          <div class="metric-sub">GST SCN · Response due Apr 2</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-head">
+            <div class="metric-lbl">Compliance Score</div>
+            <div class="metric-ic p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          </div>
+          <div class="metric-val" style="color:var(--p600);">94%</div>
+          <div class="metric-sub">↑ 7% from last quarter</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-head">
+            <div class="metric-lbl">Filings This FY</div>
+            <div class="metric-ic s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+          </div>
+          <div class="metric-val s">22</div>
+          <div class="metric-sub">2 in progress</div>
+        </div>
+      </div>
+
+      <!-- Risk Trend + Activity -->
+      <div class="risk-trend-wrap">
+        <!-- Risk Chart -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              Compliance Risk Trend
+            </span>
+            <span class="badge neutral">Last 6 months</span>
+          </div>
+          <div class="risk-chart-area">
+            <div class="risk-legend">
+              <div class="rl-item"><div class="rl-dot" style="background:var(--d400)"></div>Critical</div>
+              <div class="rl-item"><div class="rl-dot" style="background:var(--a400)"></div>High</div>
+              <div class="rl-item"><div class="rl-dot" style="background:var(--w400)"></div>Medium</div>
+              <div class="rl-item"><div class="rl-dot" style="background:var(--s400)"></div>Low</div>
+            </div>
+            <div class="risk-svg-wrap">
+              <svg viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
+                <!-- Grid lines -->
+                <line x1="0" y1="0" x2="520" y2="0" stroke="#DADEE6" stroke-width="1"/>
+                <line x1="0" y1="40" x2="520" y2="40" stroke="#DADEE6" stroke-width="1"/>
+                <line x1="0" y1="80" x2="520" y2="80" stroke="#DADEE6" stroke-width="1"/>
+                <line x1="0" y1="120" x2="520" y2="120" stroke="#DADEE6" stroke-width="1"/>
+                <line x1="0" y1="160" x2="520" y2="160" stroke="#DADEE6" stroke-width="1"/>
+                <!-- Y labels -->
+                <text x="-6" y="4" font-size="9" fill="#98A1B3" text-anchor="end">High</text>
+                <text x="-6" y="84" font-size="9" fill="#98A1B3" text-anchor="end">Med</text>
+                <text x="-6" y="164" font-size="9" fill="#98A1B3" text-anchor="end">Low</text>
+                <!-- Critical line -->
+                <polyline points="0,120 104,140 208,130 312,100 416,90 520,110" fill="none" stroke="#EF4444" stroke-width="2" stroke-linejoin="round"/>
+                <!-- High line -->
+                <polyline points="0,80 104,95 208,85 312,60 416,55 520,70" fill="none" stroke="#F97316" stroke-width="2" stroke-linejoin="round"/>
+                <!-- Medium line -->
+                <polyline points="0,50 104,60 208,55 312,45 416,40 520,50" fill="none" stroke="#EAB308" stroke-width="2" stroke-linejoin="round"/>
+                <!-- Low line -->
+                <polyline points="0,30 104,25 208,30 312,20 416,18 520,22" fill="none" stroke="#22C55E" stroke-width="2" stroke-linejoin="round"/>
+                <!-- Dots on current (last point) -->
+                <circle cx="520" cy="110" r="4" fill="#EF4444"/>
+                <circle cx="520" cy="70" r="4" fill="#F97316"/>
+                <circle cx="520" cy="50" r="4" fill="#EAB308"/>
+                <circle cx="520" cy="22" r="4" fill="#22C55E"/>
+              </svg>
+            </div>
+            <div class="risk-x-labels">
+              <span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Risk Score + Recent Activity -->
+        <div class="risk-side">
+          <!-- Risk Score -->
+          <div class="card">
+            <div class="card-header" style="padding:14px 16px;">
+              <span class="card-title" style="font-size:13px;">Overall Risk Score</span>
+              <span class="badge high">Medium-High</span>
+            </div>
+            <div style="padding:16px;">
+              <div style="text-align:center;margin-bottom:14px;">
+                <div class="rsc-score">62<span>/100</span></div>
+                <div style="font-size:11px;color:var(--n400);margin-top:3px;">As of April 2026</div>
+              </div>
+              <div class="risk-breakdown">
+                <div class="rb-row">
+                  <div class="rb-label">GST</div>
+                  <div class="rb-bar"><div class="rb-fill" style="width:78%;background:var(--a400)"></div></div>
+                  <div class="rb-val" style="color:var(--a500);">78</div>
+                </div>
+                <div class="rb-row">
+                  <div class="rb-label">Income Tax</div>
+                  <div class="rb-bar"><div class="rb-fill" style="width:45%;background:var(--w400)"></div></div>
+                  <div class="rb-val" style="color:var(--w600);">45</div>
+                </div>
+                <div class="rb-row">
+                  <div class="rb-label">TDS</div>
+                  <div class="rb-bar"><div class="rb-fill" style="width:55%;background:var(--w400)"></div></div>
+                  <div class="rb-val" style="color:var(--w600);">55</div>
+                </div>
+                <div class="rb-row">
+                  <div class="rb-label">MCA / ROC</div>
+                  <div class="rb-bar"><div class="rb-fill" style="width:20%;background:var(--s400)"></div></div>
+                  <div class="rb-val" style="color:var(--s600);">20</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Upcoming Deadlines -->
+          <div class="card">
+            <div class="card-header" style="padding:14px 16px;">
+              <span class="card-title" style="font-size:13px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Upcoming Deadlines
+              </span>
+            </div>
+            <div class="deadline-list">
+              <div class="dl-item" onclick="nav('tasks',document.querySelector('[data-screen=tasks]'))">
+                <div class="dl-bar c"></div>
+                <div class="dl-info">
+                  <div class="dl-title">GST SCN Response</div>
+                  <div class="dl-sub">Section 61 · CBIC</div>
+                </div>
+                <div class="dl-date overdue">Apr 2 · <b>Today</b></div>
+              </div>
+              <div class="dl-item" onclick="nav('tasks',document.querySelector('[data-screen=tasks]'))">
+                <div class="dl-bar c"></div>
+                <div class="dl-info">
+                  <div class="dl-title">GSTR-9 Annual Return</div>
+                  <div class="dl-sub">FY 2024-25</div>
+                </div>
+                <div class="dl-date soon">Apr 5 · 3d</div>
+              </div>
+              <div class="dl-item">
+                <div class="dl-bar m"></div>
+                <div class="dl-info">
+                  <div class="dl-title">TDS Q4 Return</div>
+                  <div class="dl-sub">Form 26Q</div>
+                </div>
+                <div class="dl-date">Apr 30 · 28d</div>
+              </div>
+              <div class="dl-item">
+                <div class="dl-bar m"></div>
+                <div class="dl-info">
+                  <div class="dl-title">Advance Tax Q4</div>
+                  <div class="dl-sub">Income Tax</div>
+                </div>
+                <div class="dl-date">May 15 · 43d</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Recent Activity
+          </span>
+        </div>
+        <div class="tl-card-list" style="padding:4px 18px;">
+          <div class="tl-item">
+            <div class="tl-dot d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+            <div>
+              <div class="tl-text">GST SCN notice received — <span class="badge critical" style="margin-left:2px">Response Due Today</span></div>
+              <div class="tl-sub">Mar 18, 2026 · Priya Kumar assigned</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot w"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+            <div>
+              <div class="tl-text">GSTR-9 task created — awaiting reconciliation docs from you</div>
+              <div class="tl-sub">Mar 24, 2026 · Task #T-082</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+            <div>
+              <div class="tl-text">GSTR-3B for March 2026 filed successfully</div>
+              <div class="tl-sub">Mar 20, 2026 · ₹0 penalty</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+            <div>
+              <div class="tl-text">Message from Priya Kumar re: ITC reconciliation</div>
+              <div class="tl-sub">Mar 15, 2026 · Inbox · Unread</div>
+            </div>
+          </div>
+          <div class="tl-item" style="border-bottom:none;">
+            <div class="tl-dot s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+            <div>
+              <div class="tl-text">TDS Q3 Return filed — Form 26Q submitted</div>
+              <div class="tl-sub">Jan 31, 2026 · On time</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /dashboard -->
+
+    <!-- ══ INBOX ══ -->
+    <div class="screen" id="screen-inbox" style="overflow:hidden;">
+      <div class="inbox-layout">
+        <!-- Left: Message List -->
+        <div class="inbox-left">
+          <div class="inbox-header">
+            <h2>Inbox</h2>
+            <p>Direct messages with your CA team</p>
+          </div>
+          <div class="inbox-search-wrap">
+            <div class="inbox-search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" placeholder="Search messages…" />
+            </div>
+          </div>
+          <div class="msg-list">
+            <div class="msg-item unread active" onclick="openMsg(this,'m1')">
+              <div class="msg-head"><span class="msg-sender">Priya Kumar (CA)</span><span class="msg-time">10:32 AM</span></div>
+              <div class="msg-preview">Please share the GSTR-9 ITC reconciliation statement — we need it to file before the deadline.</div>
+              <div class="msg-footer"><span class="badge critical" style="margin-left:auto">Urgent · GSTR-9</span><div class="unread-dot"></div></div>
+            </div>
+            <div class="msg-item unread" onclick="openMsg(this,'m2')">
+              <div class="msg-head"><span class="msg-sender">Finaira Team</span><span class="msg-time">Yesterday</span></div>
+              <div class="msg-preview">Your SCN response draft is ready for review. Please check and approve at your earliest.</div>
+              <div class="msg-footer"><span class="badge high">SCN Draft</span><div class="unread-dot"></div></div>
+            </div>
+            <div class="msg-item" onclick="openMsg(this,'m3')">
+              <div class="msg-head"><span class="msg-sender">Priya Kumar (CA)</span><span class="msg-time">Mar 20</span></div>
+              <div class="msg-preview">GSTR-3B for March has been filed. No penalties. Tax paid: ₹19,50,000.</div>
+              <div class="msg-footer"><span class="badge success">Filing Done</span></div>
+            </div>
+            <div class="msg-item" onclick="openMsg(this,'m4')">
+              <div class="msg-head"><span class="msg-sender">Amit Sharma (CA)</span><span class="msg-time">Mar 15</span></div>
+              <div class="msg-preview">Hi Rakesh ji, just following up on the advance tax computation for Q4. Please share P&L by March 28.</div>
+              <div class="msg-footer"><span class="badge medium">Advance Tax</span></div>
+            </div>
+            <div class="msg-item" onclick="openMsg(this,'m5')">
+              <div class="msg-head"><span class="msg-sender">Priya Kumar (CA)</span><span class="msg-time">Mar 10</span></div>
+              <div class="msg-preview">All TDS Q3 returns filed successfully. Form 16A will be generated by April 15.</div>
+              <div class="msg-footer"><span class="badge success">TDS Filed</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Chat -->
+        <div class="inbox-right">
+          <div class="chat-header" id="chatHeader">
+            <div class="chat-av">PK</div>
+            <div>
+              <div class="chat-name">Priya Kumar</div>
+              <div class="chat-status">Senior CA · Joshi & Associates</div>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:8px;">
+              <button class="btn btn-secondary" style="font-size:12px;padding:6px 12px;" onclick="nav('tasks',document.querySelector('[data-screen=tasks]'))">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                Related Tasks
+              </button>
+            </div>
+          </div>
+
+          <div class="chat-messages" id="chatMessages">
+            <div class="msg-divider">Mar 24, 2026</div>
+
+            <div class="msg-bubble-wrap">
+              <div class="bubble-av" style="background:linear-gradient(135deg,#EF4444,#DC2626)">PK</div>
+              <div>
+                <div class="msg-bubble firm">Rakesh ji, I've created the GSTR-9 task for FY 2024-25. We'll need the following from you: complete ITC reconciliation (GSTR-2B vs books), any credit notes issued after March 2025, and HSN summary for all sales. Can you share these by April 3rd?</div>
+                <div class="bubble-meta">10:14 AM</div>
+              </div>
+            </div>
+
+            <div class="msg-bubble-wrap client">
+              <div class="bubble-av" style="background:linear-gradient(135deg,var(--a400),var(--a500))">RM</div>
+              <div>
+                <div class="msg-bubble client-msg">Sure, I'll have our accounts team prepare these. Will share by EOD tomorrow.</div>
+                <div class="bubble-meta client-meta">11:32 AM · ✓✓</div>
+              </div>
+            </div>
+
+            <div class="msg-divider">Today · Apr 2, 2026</div>
+
+            <div class="msg-bubble-wrap">
+              <div class="bubble-av" style="background:linear-gradient(135deg,#EF4444,#DC2626)">PK</div>
+              <div>
+                <div class="msg-bubble firm">Rakesh ji, the deadline is approaching. I haven't received the reconciliation statement yet. The GSTR-9 needs to be filed by April 5. Please upload the documents in the task or send them here ASAP. 🙏</div>
+                <div class="bubble-meta">10:32 AM</div>
+              </div>
+            </div>
+
+            <div class="msg-bubble-wrap">
+              <div class="bubble-av" style="background:linear-gradient(135deg,#p600,#indigo)" style="background:linear-gradient(135deg,var(--p600),var(--indigo))">FN</div>
+              <div>
+                <div class="msg-bubble firm" style="background:var(--p50);border-color:rgba(37,99,235,.15);">
+                  <div style="font-size:10px;font-weight:600;color:var(--p600);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">⚡ Finaira Alert</div>
+                  Your SCN reply draft for GST notice (Ref: GSTIN/SCN/2024-25/0342) is ready. Please review it in the Notices section and confirm to proceed.
+                </div>
+                <div class="bubble-meta">11:05 AM</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-input-area">
+            <div style="font-size:11px;color:var(--n400);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Messages are shared with your CA team at Joshi & Associates
+            </div>
+            <div class="chat-input-row">
+              <button class="chat-attach" onclick="showToast('File attachment will be available soon','info')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+              </button>
+              <textarea class="chat-input" id="chatInputBox" placeholder="Type a message to your CA…" rows="1" onkeydown="handleChatEnter(event)"></textarea>
+              <button class="chat-send" onclick="sendMsg()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TASKS ══ -->
+    <div class="screen" id="screen-tasks" style="overflow:hidden;flex-direction:column;">
+
+      <!-- Task List View -->
+      <div id="taskListView" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+        <div class="tasks-header-bar">
+          <div>
+            <div class="section-heading" style="font-size:16px;">Tasks</div>
+            <div class="section-sub">All compliance tasks for Mehta Industries</div>
+          </div>
+        </div>
+        <div class="tasks-tab-wrap">
+          <div class="tasks-tabs">
+            <button class="tasks-tab active" onclick="switchTaskTab(this,'current-tasks')">
+              Current Tasks <span class="badge" style="background:rgba(249,115,22,.1);color:var(--a500);">3</span>
+            </button>
+            <button class="tasks-tab" onclick="switchTaskTab(this,'past-tasks')">
+              Past Tasks <span class="badge neutral">2</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Current Tasks Tab -->
+        <div class="task-tab-content active" id="current-tasks">
+          <div class="task-table-wrap">
+            <table class="task-table">
+              <thead>
+                <tr>
+                  <th style="width:36%">Task</th>
+                  <th>Status</th>
+                  <th>Priority</th>
+                  <th>Due Date</th>
+                  <th>Assigned CA</th>
+                  <th>Category</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr onclick="openTaskDetail('t1')">
+                  <td>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <div style="width:3px;height:36px;border-radius:2px;background:var(--d400);flex-shrink:0;"></div>
+                      <div>
+                        <div class="tt-title">GSTR-9 Annual Return — FY 2024-25</div>
+                        <div class="tt-sub">Task #T-082 · Documents required from you</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="status-pill awaiting">Client Input Awaited</span></td>
+                  <td><span class="priority-dot c">Critical</span></td>
+                  <td><span class="due-date soon">Apr 5, 2026</span></td>
+                  <td>
+                    <div class="assignee-cell">
+                      <div class="assignee-av" style="background:linear-gradient(135deg,#EF4444,#DC2626)">PK</div>
+                      <span class="assignee-name">Priya Kumar</span>
+                    </div>
+                  </td>
+                  <td><span class="badge neutral">GST</span></td>
+                </tr>
+                <tr onclick="openTaskDetail('t2')">
+                  <td>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <div style="width:3px;height:36px;border-radius:2px;background:var(--d400);flex-shrink:0;"></div>
+                      <div>
+                        <div class="tt-title">GST SCN Response — Section 61 Scrutiny</div>
+                        <div class="tt-sub">Task #T-083 · Approval required from you today</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="status-pill awaiting">Client Input Awaited</span></td>
+                  <td><span class="priority-dot c">Critical</span></td>
+                  <td><span class="due-date overdue">Apr 2, 2026 · Today</span></td>
+                  <td>
+                    <div class="assignee-cell">
+                      <div class="assignee-av" style="background:linear-gradient(135deg,#EF4444,#DC2626)">PK</div>
+                      <span class="assignee-name">Priya Kumar</span>
+                    </div>
+                  </td>
+                  <td><span class="badge neutral">GST · SCN</span></td>
+                </tr>
+                <tr onclick="openTaskDetail('t3')">
+                  <td>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <div style="width:3px;height:36px;border-radius:2px;background:var(--w400);flex-shrink:0;"></div>
+                      <div>
+                        <div class="tt-title">TDS Q4 Return — Form 26Q</div>
+                        <div class="tt-sub">Task #T-084 · Being prepared by CA</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="status-pill in-review">In Progress</span></td>
+                  <td><span class="priority-dot m">Medium</span></td>
+                  <td><span class="due-date">Apr 30, 2026</span></td>
+                  <td>
+                    <div class="assignee-cell">
+                      <div class="assignee-av" style="background:linear-gradient(135deg,#F97316,#EA580C)">AS</div>
+                      <span class="assignee-name">Amit Sharma</span>
+                    </div>
+                  </td>
+                  <td><span class="badge neutral">TDS</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Past Tasks Tab -->
+        <div class="task-tab-content" id="past-tasks">
+          <div class="task-table-wrap">
+            <table class="task-table">
+              <thead>
+                <tr>
+                  <th style="width:36%">Task</th>
+                  <th>Status</th>
+                  <th>Filed On</th>
+                  <th>CA</th>
+                  <th>Category</th>
+                  <th>Outcome</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr onclick="openTaskDetail('t4')">
+                  <td>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <div style="width:3px;height:36px;border-radius:2px;background:var(--s400);flex-shrink:0;"></div>
+                      <div>
+                        <div class="tt-title">GSTR-3B — March 2026</div>
+                        <div class="tt-sub">Task #T-079 · Monthly GST Return</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="status-pill done">Completed</span></td>
+                  <td><span class="due-date" style="color:var(--s600)">Mar 20, 2026</span></td>
+                  <td>
+                    <div class="assignee-cell">
+                      <div class="assignee-av" style="background:linear-gradient(135deg,#EF4444,#DC2626)">PK</div>
+                      <span class="assignee-name">Priya Kumar</span>
+                    </div>
+                  </td>
+                  <td><span class="badge neutral">GST · Monthly</span></td>
+                  <td><span style="font-size:12px;color:var(--s600);font-weight:500;">₹0 penalty · On time</span></td>
+                </tr>
+                <tr onclick="openTaskDetail('t5')">
+                  <td>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <div style="width:3px;height:36px;border-radius:2px;background:var(--s400);flex-shrink:0;"></div>
+                      <div>
+                        <div class="tt-title">TDS Q3 Return — Form 26Q</div>
+                        <div class="tt-sub">Task #T-076 · Oct–Dec 2025</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="status-pill done">Completed</span></td>
+                  <td><span class="due-date" style="color:var(--s600)">Jan 31, 2026</span></td>
+                  <td>
+                    <div class="assignee-cell">
+                      <div class="assignee-av" style="background:linear-gradient(135deg,#F97316,#EA580C)">AS</div>
+                      <span class="assignee-name">Amit Sharma</span>
+                    </div>
+                  </td>
+                  <td><span class="badge neutral">TDS</span></td>
+                  <td><span style="font-size:12px;color:var(--s600);font-weight:500;">Filed on time</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ TASK DETAIL VIEW ══ -->
+      <!-- Task T1 Detail -->
+      <div class="task-detail-wrap" id="taskDetail-t1">
+        <div class="td-main">
+          <div class="td-breadcrumb">
+            <span onclick="closeTaskDetail()">Tasks</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><polyline points="9 18 15 12 9 6"/></svg>
+            GSTR-9 Annual Return
+          </div>
+          <div class="td-title-row">
+            <div class="td-title">GSTR-9 Annual Return — FY 2024-25</div>
+            <div style="display:flex;gap:8px;flex-shrink:0;">
+              <button class="btn btn-secondary" style="font-size:12px;padding:7px 12px;" onclick="nav('inbox',document.querySelector('[data-screen=inbox]'))">Message CA</button>
+            </div>
+          </div>
+          <div class="td-meta-row">
+            <span class="status-pill awaiting">Client Input Awaited</span>
+            <span class="badge critical">Critical</span>
+            <span class="badge neutral">GST · Annual Return</span>
+            <span class="badge neutral">Task #T-082</span>
+          </div>
+
+          <div class="td-section">
+            <div class="td-section-title">Description</div>
+            <p class="td-desc">Priya Kumar is preparing the GSTR-9 Annual Return for Mehta Industries for FY 2024-25. To proceed, she needs the following documentation from you. Please upload the files or share them directly. The statutory deadline is <strong>April 5, 2026</strong>.</p>
+          </div>
+
+          <div class="td-section">
+            <div class="td-section-title">Documents Required from You</div>
+            <div class="awaiting-banner">
+              <div class="awb-head">
+                <div class="awb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                <div class="awb-title">Your CA is waiting for these documents</div>
+              </div>
+              <p class="awb-body">Please provide the following at the earliest to avoid a filing delay or penalty:</p>
+              <div class="docs-required">
+                <div class="doc-req-item">ITC Reconciliation Statement (GSTR-2B vs Books of Accounts)</div>
+                <div class="doc-req-item">HSN-wise Sales Summary for FY 2024-25</div>
+                <div class="doc-req-item">Credit/Debit Notes Register (if any issued after March 2025)</div>
+                <div class="doc-req-item">Annual Turnover figures (including exempt, NIL-rated, non-GST supplies)</div>
+              </div>
+            </div>
+            <div style="margin-bottom:10px;font-size:12px;font-weight:600;color:var(--n700);">Upload Documents</div>
+            <div class="upload-zone" onclick="mockUpload('dt1')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <p>Click to upload or drag &amp; drop files here</p>
+              <span>PDF, Excel, CSV · Max 25MB per file</span>
+            </div>
+            <div class="uploaded-files" id="uploads-dt1"></div>
+            <div style="margin-top:12px;display:flex;gap:8px;">
+              <button class="btn btn-primary" onclick="submitDocs('dt1')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Submit to CA
+              </button>
+              <button class="btn btn-secondary" onclick="nav('inbox',document.querySelector('[data-screen=inbox]'))">Message Priya Kumar</button>
+            </div>
+          </div>
+
+          <div class="td-section">
+            <div class="td-section-title">Activity & Comments</div>
+            <div id="comments-t1" style="margin-bottom:14px;">
+              <div class="comment-item">
+                <div class="comment-av-sm" style="background:linear-gradient(135deg,#EF4444,#DC2626)">PK</div>
+                <div class="comment-body">
+                  <div class="comment-meta">Priya Kumar · Today, 10:32 AM</div>
+                  <div class="comment-text">Rakesh ji, I still need the ITC reconciliation statement and HSN summary. The filing deadline is April 5. Could you please share these at the earliest?</div>
+                </div>
+              </div>
+            </div>
+            <div class="td-timeline">
+              <div class="tl-item-d">
+                <div class="tl-dot-d a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                <div><div class="tl-text-d">Priya Kumar requested documents from you</div><div class="tl-time-d">Today, 10:32 AM</div></div>
+              </div>
+              <div class="tl-item-d">
+                <div class="tl-dot-d p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/></svg></div>
+                <div><div class="tl-text-d">Task created and assigned to Priya Kumar</div><div class="tl-time-d">Mar 24, 2026</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="comment-wrap">
+            <div style="font-size:11px;color:var(--n400);margin-bottom:8px;">Leave a comment for your CA</div>
+            <div class="comment-input-row">
+              <textarea class="comment-input" id="commentInput-t1" placeholder="Type a comment or question…" rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();postComment('t1');}"></textarea>
+              <button class="comment-send" onclick="postComment('t1')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+            </div>
+          </div>
+        </div>
+        <div class="td-side">
+          <div class="td-side-section">
+            <div class="tds-title">Status</div>
+            <span class="status-pill awaiting">Client Input Awaited</span>
+          </div>
+          <div class="td-side-section">
+            <div class="tds-title">Deadline</div>
+            <div class="tds-val soon">April 5, 2026</div>
+            <div style="font-size:11px;color:var(--n400);margin-top:3px;">3 days remaining</div>
+          </div>
+          <div class="td-side-section">
+            <div class="tds-title">Working CA</div>
+            <div class="ca-contact-d">
+              <div class="ca-av-d" style="background:linear-gradient(135deg,#EF4444,#DC2626)">PK</div>
+              <div class="ca-info-d"><div class="name">Priya Kumar</div><div class="role">Senior CA · Joshi & Associates</div></div>
+            </div>
+            <button class="btn btn-secondary" style="width:100%;justify-content:center;font-size:12px;margin-top:10px;" onclick="nav('inbox',document.querySelector('[data-screen=inbox]'))">Send Message</button>
+          </div>
+          <div class="td-side-section">
+            <div class="tds-title">Filing Details</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;color:var(--n500);">Form</span><span style="font-size:12px;font-weight:500;color:var(--n900);">GSTR-9</span></div>
+              <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;color:var(--n500);">Period</span><span style="font-size:12px;font-weight:500;color:var(--n900);">FY 2024-25</span></div>
+              <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;color:var(--n500);">Category</span><span style="font-size:12px;font-weight:500;color:var(--n900);">GST Annual Return</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task T2 Detail -->
+      <div class="task-detail-wrap" id="taskDetail-t2">
+        <div class="td-main">
+          <div class="td-breadcrumb">
+            <span onclick="closeTaskDetail()">Tasks</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><polyline points="9 18 15 12 9 6"/></svg>
+            GST SCN Response
+          </div>
+          <div class="td-title-row">
+            <div class="td-title">GST SCN Response — Section 61 Scrutiny</div>
+            <div style="display:flex;gap:8px;flex-shrink:0;">
+              <button class="btn btn-success" onclick="approveTask('t2')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                Approve Submission
+              </button>
+              <button class="btn btn-secondary" style="font-size:12px;padding:7px 12px;" onclick="nav('inbox',document.querySelector('[data-screen=inbox]'))">Request Changes</button>
+            </div>
+          </div>
+          <div class="td-meta-row">
+            <span class="status-pill awaiting">Client Input Awaited</span>
+            <span class="badge critical">Critical</span>
+            <span class="badge neutral">GST · SCN</span>
+            <span class="badge neutral">Task #T-083</span>
+          </div>
+
+          <div class="td-section">
+            <div class="td-section-title">Description</div>
+            <p class="td-desc">Priya Kumar has prepared a reply to the GST Show Cause Notice (Ref: GSTIN/SCN/2024-25/0342). You need to <strong>review and approve</strong> the reply for it to be submitted before today's deadline.</p>
+          </div>
+
+          <div class="td-section">
+            <div class="td-section-title">Action Required</div>
+            <div class="awaiting-banner" style="background:rgba(239,68,68,.04);border-color:rgba(239,68,68,.2);">
+              <div class="awb-head">
+                <div class="awb-icon" style="background:rgba(239,68,68,.1);color:var(--d400);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div>
+                <div class="awb-title" style="color:var(--d400);">Reply deadline is TODAY — approve to proceed</div>
+              </div>
+              <p class="awb-body">Priya Kumar has drafted the SCN reply. You need to authorize submission. If no action is taken today, the CA cannot file on your behalf.</p>
+              <div class="docs-required">
+                <div class="doc-req-item">Review the reply draft in the <strong>Notices</strong> section</div>
+                <div class="doc-req-item">Confirm the reply is accurate or provide corrections</div>
+                <div class="doc-req-item">Authorize Priya Kumar to submit on your behalf</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-primary" onclick="nav('notices',document.querySelector('[data-screen=notices]'))">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Review Notice & Draft
+              </button>
+              <button class="btn btn-success" onclick="approveTask('t2')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                Approve Submission
+              </button>
+            </div>
+          </div>
+
+          <div class="td-section">
+            <div class="td-section-title">Activity & Comments</div>
+            <div id="comments-t2" style="margin-bottom:14px;">
+              <div class="comment-item">
+                <div class="comment-av-sm" style="background:linear-gradient(135deg,#EF4444,#DC2626)">PK</div>
+                <div class="comment-body">
+                  <div class="comment-meta">Priya Kumar · Today, 9:00 AM</div>
+                  <div class="comment-text">Rakesh ji, the SCN reply is ready. I have explained the ₹4.8L discrepancy through credit notes and advance tax timing differences. Please review and approve at the earliest — the deadline is today.</div>
+                </div>
+              </div>
+            </div>
+            <div class="td-timeline">
+              <div class="tl-item-d">
+                <div class="tl-dot-d p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg></div>
+                <div><div class="tl-text-d">Reply draft prepared by Priya Kumar and shared with you</div><div class="tl-time-d">Today, 11:05 AM</div></div>
+              </div>
+              <div class="tl-item-d">
+                <div class="tl-dot-d a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                <div><div class="tl-text-d">Priya Kumar requested your approval for submission</div><div class="tl-time-d">Today, 9:00 AM</div></div>
+              </div>
+              <div class="tl-item-d">
+                <div class="tl-dot-d p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/></svg></div>
+                <div><div class="tl-text-d">Task created from notice GSTIN/SCN/2024-25/0342</div><div class="tl-time-d">Mar 18, 2026</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="comment-wrap">
+            <div style="font-size:11px;color:var(--n400);margin-bottom:8px;">Leave a comment for your CA</div>
+            <div class="comment-input-row">
+              <textarea class="comment-input" id="commentInput-t2" placeholder="Type a comment or question…" rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();postComment('t2');}"></textarea>
+              <button class="comment-send" onclick="postComment('t2')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+            </div>
+          </div>
+        </div>
+        <div class="td-side">
+          <div class="td-side-section">
+            <div class="tds-title">Status</div>
+            <span class="status-pill awaiting" id="t2-side-status">Client Input Awaited</span>
+          </div>
+          <div class="td-side-section">
+            <div class="tds-title">Deadline</div>
+            <div class="tds-val overdue">April 2, 2026 — TODAY</div>
+            <div style="font-size:11px;color:var(--d400);margin-top:3px;font-weight:500;">⚠ Final day to respond</div>
+          </div>
+          <div class="td-side-section">
+            <div class="tds-title">Working CA</div>
+            <div class="ca-contact-d">
+              <div class="ca-av-d" style="background:linear-gradient(135deg,#EF4444,#DC2626)">PK</div>
+              <div class="ca-info-d"><div class="name">Priya Kumar</div><div class="role">Senior CA · Joshi & Associates</div></div>
+            </div>
+            <button class="btn btn-secondary" style="width:100%;justify-content:center;font-size:12px;margin-top:10px;" onclick="nav('inbox',document.querySelector('[data-screen=inbox]'))">Send Message</button>
+          </div>
+          <div class="td-side-section">
+            <div class="tds-title">Notice Reference</div>
+            <div style="font-size:12px;font-family:monospace;color:var(--n700);margin-bottom:6px;">GSTIN/SCN/2024-25/0342</div>
+            <div style="font-size:12px;color:var(--n600);">Amount in question: <strong style="color:var(--d400)">₹4,80,000</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task T3 Detail -->
+      <div class="task-detail-wrap" id="taskDetail-t3">
+        <div class="td-main">
+          <div class="td-breadcrumb">
+            <span onclick="closeTaskDetail()">Tasks</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><polyline points="9 18 15 12 9 6"/></svg>
+            TDS Q4 Return
+          </div>
+          <div class="td-title-row">
+            <div class="td-title">TDS Q4 Return — Form 26Q</div>
+            <div style="display:flex;gap:8px;flex-shrink:0;">
+              <button class="btn btn-secondary" style="font-size:12px;padding:7px 12px;" onclick="nav('inbox',document.querySelector('[data-screen=inbox]'))">Message CA</button>
+            </div>
+          </div>
+          <div class="td-meta-row">
+            <span class="status-pill in-review">In Progress</span>
+            <span class="badge medium">Medium</span>
+            <span class="badge neutral">TDS</span>
+            <span class="badge neutral">Task #T-084</span>
+          </div>
+
+          <div class="td-section">
+            <div class="td-section-title">Description</div>
+            <p class="td-desc">Amit Sharma is working on the Q4 TDS return (January–March 2026). All deductor details and challan data have been received. No action is required from you at this time.</p>
+          </div>
+
+          <div class="td-section">
+            <div class="td-section-title">Current Progress</div>
+            <div style="background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.2);border-radius:var(--r-xl);padding:14px 16px;margin-bottom:14px;">
+              <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--s600);margin-bottom:4px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/></svg>
+                No action required from you right now
+              </div>
+              <div style="font-size:12px;color:var(--n600);line-height:1.5;">Amit Sharma is preparing the return. You will be notified when it's ready for your review, approximately April 25th.</div>
+            </div>
+            <div style="margin-bottom:6px;font-size:12px;color:var(--n500);">Task progress</div>
+            <div style="height:8px;background:var(--n50);border:1px solid var(--border);border-radius:var(--r-sm);overflow:hidden;margin-bottom:4px;">
+              <div style="width:40%;height:100%;background:var(--p600);border-radius:var(--r-sm);"></div>
+            </div>
+            <div style="font-size:11px;color:var(--n400);">40% complete</div>
+          </div>
+
+          <div class="td-section">
+            <div class="td-section-title">Activity</div>
+            <div class="td-timeline">
+              <div class="tl-item-d">
+                <div class="tl-dot-d p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+                <div><div class="tl-text-d">Amit Sharma started preparing Q4 TDS return</div><div class="tl-time-d">Apr 1, 2026</div></div>
+              </div>
+              <div class="tl-item-d">
+                <div class="tl-dot-d p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/></svg></div>
+                <div><div class="tl-text-d">Challan data received and verified</div><div class="tl-time-d">Mar 30, 2026</div></div>
+              </div>
+              <div class="tl-item-d">
+                <div class="tl-dot-d p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/></svg></div>
+                <div><div class="tl-text-d">Task created and assigned to Amit Sharma</div><div class="tl-time-d">Mar 28, 2026</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="comment-wrap">
+            <div style="font-size:11px;color:var(--n400);margin-bottom:8px;">Leave a comment for your CA</div>
+            <div class="comment-input-row">
+              <textarea class="comment-input" id="commentInput-t3" placeholder="Type a comment or question…" rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();postComment('t3');}"></textarea>
+              <button class="comment-send" onclick="postComment('t3')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+            </div>
+          </div>
+        </div>
+        <div class="td-side">
+          <div class="td-side-section">
+            <div class="tds-title">Status</div>
+            <span class="status-pill in-review">In Progress</span>
+          </div>
+          <div class="td-side-section">
+            <div class="tds-title">Due Date</div>
+            <div class="tds-val">April 30, 2026</div>
+            <div style="font-size:11px;color:var(--n400);margin-top:3px;">28 days remaining</div>
+          </div>
+          <div class="td-side-section">
+            <div class="tds-title">Working CA</div>
+            <div class="ca-contact-d">
+              <div class="ca-av-d" style="background:linear-gradient(135deg,#F97316,#EA580C)">AS</div>
+              <div class="ca-info-d"><div class="name">Amit Sharma</div><div class="role">CA Associate · Joshi & Associates</div></div>
+            </div>
+            <button class="btn btn-secondary" style="width:100%;justify-content:center;font-size:12px;margin-top:10px;" onclick="nav('inbox',document.querySelector('[data-screen=inbox]'))">Send Message</button>
+          </div>
+          <div class="td-side-section">
+            <div class="tds-title">Filing Details</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;color:var(--n500);">Form</span><span style="font-size:12px;font-weight:500;color:var(--n900);">Form 26Q</span></div>
+              <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;color:var(--n500);">Quarter</span><span style="font-size:12px;font-weight:500;color:var(--n900);">Q4 (Jan–Mar 2026)</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task T4 Detail (Past) -->
+      <div class="task-detail-wrap" id="taskDetail-t4">
+        <div class="td-main">
+          <div class="td-breadcrumb">
+            <span onclick="closeTaskDetail()">Tasks</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><polyline points="9 18 15 12 9 6"/></svg>
+            GSTR-3B March 2026
+          </div>
+          <div class="td-title-row">
+            <div class="td-title">GSTR-3B — March 2026</div>
+          </div>
+          <div class="td-meta-row">
+            <span class="status-pill done">Completed</span>
+            <span class="badge neutral">GST · Monthly</span>
+            <span class="badge neutral">Task #T-079</span>
+          </div>
+
+          <div class="td-section">
+            <div class="td-section-title">Description</div>
+            <p class="td-desc">GSTR-3B for the tax period March 2026 has been filed successfully by Priya Kumar. Tax of ₹19,50,000 has been paid. No penalties or late fees were incurred.</p>
+          </div>
+
+          <div class="td-section">
+            <div class="td-section-title">Filing Summary</div>
+            <div class="detail-grid-2">
+              <div class="detail-field-d"><label>Tax Paid</label><div class="df-val-d success">₹19,50,000</div></div>
+              <div class="detail-field-d"><label>Late Fee</label><div class="df-val-d success">₹0</div></div>
+              <div class="detail-field-d"><label>ARN</label><div class="df-val-d" style="font-size:11px;font-family:monospace;">AA2703260053817</div></div>
+              <div class="detail-field-d"><label>Filed On</label><div class="df-val-d">March 20, 2026</div></div>
+            </div>
+          </div>
+
+          <div class="td-section">
+            <div class="td-section-title">Activity</div>
+            <div class="td-timeline">
+              <div class="tl-item-d">
+                <div class="tl-dot-d s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/></svg></div>
+                <div><div class="tl-text-d">GSTR-3B filed successfully — ARN generated</div><div class="tl-time-d">Mar 20, 2026, 4:12 PM</div></div>
+              </div>
+              <div class="tl-item-d">
+                <div class="tl-dot-d p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/></svg></div>
+                <div><div class="tl-text-d">Tax payment of ₹19.5L processed via challan</div><div class="tl-time-d">Mar 19, 2026</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="td-side">
+          <div class="td-side-section">
+            <div class="tds-title">Status</div>
+            <span class="status-pill done">Completed</span>
+          </div>
+          <div class="td-side-section">
+            <div class="tds-title">Filed On</div>
+            <div class="tds-val success">March 20, 2026</div>
+            <div style="font-size:11px;color:var(--s600);margin-top:3px;">Filed on time · No penalty</div>
+          </div>
+          <div class="td-side-section">
+            <div class="tds-title">Filed By</div>
+            <div class="ca-contact-d">
+              <div class="ca-av-d" style="background:linear-gradient(135deg,#EF4444,#DC2626)">PK</div>
+              <div class="ca-info-d"><div class="name">Priya Kumar</div><div class="role">Senior CA · Joshi & Associates</div></div>
+            </div>
+          </div>
+          <div class="td-side-section">
+            <div class="tds-title">ARN</div>
+            <div style="font-size:12px;font-family:monospace;color:var(--n700);">AA2703260053817</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task T5 Detail (Past) -->
+      <div class="task-detail-wrap" id="taskDetail-t5">
+        <div class="td-main">
+          <div class="td-breadcrumb">
+            <span onclick="closeTaskDetail()">Tasks</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><polyline points="9 18 15 12 9 6"/></svg>
+            TDS Q3 Return
+          </div>
+          <div class="td-title-row">
+            <div class="td-title">TDS Q3 Return — Form 26Q</div>
+          </div>
+          <div class="td-meta-row">
+            <span class="status-pill done">Completed</span>
+            <span class="badge neutral">TDS</span>
+            <span class="badge neutral">Task #T-076</span>
+          </div>
+
+          <div class="td-section">
+            <div class="td-section-title">Description</div>
+            <p class="td-desc">TDS Q3 return (October–December 2025) has been filed successfully by Amit Sharma. Form 16A will be generated by April 15, 2026.</p>
+          </div>
+
+          <div class="td-section">
+            <div class="td-section-title">Filing Summary</div>
+            <div class="detail-grid-2">
+              <div class="detail-field-d"><label>Quarter</label><div class="df-val-d">Q3 FY 2025-26 (Oct–Dec)</div></div>
+              <div class="detail-field-d"><label>Filed On</label><div class="df-val-d">January 31, 2026</div></div>
+              <div class="detail-field-d"><label>Penalty</label><div class="df-val-d success">₹0</div></div>
+              <div class="detail-field-d"><label>Form 16A</label><div class="df-val-d">Due by Apr 15, 2026</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="td-side">
+          <div class="td-side-section">
+            <div class="tds-title">Status</div>
+            <span class="status-pill done">Completed</span>
+          </div>
+          <div class="td-side-section">
+            <div class="tds-title">Filed On</div>
+            <div class="tds-val success">January 31, 2026</div>
+          </div>
+          <div class="td-side-section">
+            <div class="tds-title">Filed By</div>
+            <div class="ca-contact-d">
+              <div class="ca-av-d" style="background:linear-gradient(135deg,#F97316,#EA580C)">AS</div>
+              <div class="ca-info-d"><div class="name">Amit Sharma</div><div class="role">CA Associate · Joshi & Associates</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══ NOTICES ══ -->
+    <div class="screen" id="screen-notices" style="overflow:hidden;">
+      <div class="notices-layout">
+        <!-- Left: Notice List -->
+        <div class="notices-left">
+          <div class="notices-header">
+            <div>
+              <h2>Notices</h2>
+              <p>Final notices from tax authorities</p>
+            </div>
+            <button class="btn btn-primary" style="font-size:12px;padding:7px 14px;" onclick="openLogModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Log Notice
+            </button>
+          </div>
+          <div class="notice-list">
+            <div class="notice-item active" onclick="openNotice(this,'n1')">
+              <div class="ni-top">
+                <div class="ni-title">GST SCN — Scrutiny of Returns FY 2023-24 (Section 61)</div>
+                <div class="ni-date">Mar 18</div>
+              </div>
+              <div class="ni-meta">
+                <span class="badge critical">Critical</span>
+                <span class="badge neutral">GST · Section 61</span>
+              </div>
+              <div class="ni-auth" style="margin-top:5px;">CBIC · Ref: GSTIN/SCN/2024-25/0342</div>
+            </div>
+            <div class="notice-item" onclick="openNotice(this,'n2')">
+              <div class="ni-top">
+                <div class="ni-title">Income Tax Demand Notice — AY 2023-24 Section 143(1)</div>
+                <div class="ni-date">Jan 10</div>
+              </div>
+              <div class="ni-meta">
+                <span class="badge high">High</span>
+                <span class="badge neutral">Income Tax</span>
+              </div>
+              <div class="ni-auth" style="margin-top:5px;">CBDT · CPC Bangalore</div>
+            </div>
+            <div class="notice-item" onclick="openNotice(this,'n3')">
+              <div class="ni-top">
+                <div class="ni-title">TDS Short Deduction — Q2 FY 2024-25</div>
+                <div class="ni-date">Dec 5</div>
+              </div>
+              <div class="ni-meta">
+                <span class="badge medium">Medium</span>
+                <span class="badge neutral">TDS · 26A</span>
+              </div>
+              <div class="ni-auth" style="margin-top:5px;">TRACES · Demand Ref: ORD/TDS/2025/0819</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Notice Detail -->
+        <div class="notices-right">
+          <div class="notice-detail" id="noticeDetail">
+
+            <!-- Notice n1 -->
+            <div id="notice-n1">
+              <div class="nd-header">
+                <div class="nd-top">
+                  <div class="nd-title">GST SCN — Scrutiny of Returns FY 2023-24 (Section 61)</div>
+                  <div class="nd-actions">
+                    <button class="btn btn-secondary" style="font-size:12px;padding:7px 12px;" onclick="showToast('Downloading notice PDF…','info')">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                      Download
+                    </button>
+                  </div>
+                </div>
+                <div class="nd-meta-pills">
+                  <span class="nd-meta-pill danger">Critical Priority</span>
+                  <span class="nd-meta-pill">GST · Section 61</span>
+                  <span class="nd-meta-pill warn">Response Due: Apr 2, 2026 — Today</span>
+                  <span class="nd-meta-pill">Ref: GSTIN/SCN/2024-25/0342</span>
+                  <span class="nd-meta-pill">Received: Mar 18, 2026</span>
+                </div>
+              </div>
+
+              <!-- CA handling card -->
+              <div class="ca-handling-card">
+                <div class="chc-head">
+                  <div class="chc-av">PK</div>
+                  <div>
+                    <div class="chc-name">Priya Kumar is handling this notice</div>
+                    <div class="chc-role">Senior CA · Joshi & Associates</div>
+                  </div>
+                </div>
+                <div class="chc-status">
+                  <span style="flex-shrink:0;font-weight:500;">Reply draft ready</span>
+                  <div class="chc-prog"><div class="chc-prog-fill" style="width:85%"></div></div>
+                  <span class="chc-prog-pct">85%</span>
+                </div>
+                <div style="margin-top:10px;display:flex;gap:8px;">
+                  <button class="btn btn-primary" style="font-size:12px;padding:7px 14px;" onclick="approveTask('t2');showToast('Reply approved! Priya Kumar will submit today.','success')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg>
+                    Approve Reply Submission
+                  </button>
+                  <button class="btn btn-secondary" style="font-size:12px;padding:7px 14px;" onclick="nav('inbox',document.querySelector('[data-screen=inbox]'))">Message CA</button>
+                </div>
+              </div>
+
+              <!-- Notice details grid -->
+              <div class="notice-details-grid">
+                <div class="detail-field"><label>Notice Type</label><div class="df-val">Scrutiny — Section 61</div></div>
+                <div class="detail-field"><label>Authority</label><div class="df-val">CBIC — GST Department</div></div>
+                <div class="detail-field"><label>Period</label><div class="df-val">FY 2023-24 (Apr 2023 – Mar 2024)</div></div>
+                <div class="detail-field"><label>Amount in Question</label><div class="df-val danger">₹4,80,000</div></div>
+                <div class="detail-field"><label>Date Received</label><div class="df-val">March 18, 2026</div></div>
+                <div class="detail-field"><label>Response Deadline</label><div class="df-val danger">April 2, 2026</div></div>
+              </div>
+
+              <!-- Notice body -->
+              <div class="notice-body-box">
+                <div class="nbb-label">Full Notice Content (Read Only)</div>
+                <div class="nbb-text">
+                  Your GSTR-3B for the period April 2023 to March 2024 has been selected for scrutiny under Section 61 of the CGST Act, 2017. The following discrepancies have been observed between your GSTR-1 and GSTR-3B filings:<br><br>
+                  1. Output tax declared in GSTR-1: ₹24,30,000<br>
+                  2. Tax paid via GSTR-3B: ₹19,50,000<br>
+                  3. Difference: ₹4,80,000<br><br>
+                  You are hereby directed to submit a reply along with supporting documents explaining the discrepancy within 15 days from the date of receipt of this notice. Failure to respond may result in ex-parte assessment under Section 62.
+                </div>
+              </div>
+
+              <!-- Reply Draft by CA -->
+              <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);padding:16px;margin-bottom:18px;">
+                <h4 style="font-size:11px;font-weight:600;color:var(--n700);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;display:flex;align-items:center;gap:5px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  Reply Draft — By Priya Kumar
+                </h4>
+                <p style="font-size:13px;color:var(--n700);line-height:1.65;margin-bottom:12px;">The ₹4.8L discrepancy has been explained as follows: credit notes issued in April–May 2023 (₹2.1L) were reported in subsequent GSTR-1 filings, advance tax timing differences between GSTR-1 and GSTR-3B (₹1.7L) due to invoice date vs. payment date, and minor rounding adjustments (₹1L). Supporting documentation has been compiled and is ready for submission.</p>
+                <button class="btn btn-primary" style="font-size:12px;padding:7px 14px;" onclick="approveTask('t2');showToast('Reply approved and sent to Priya Kumar!','success')">
+                  ✓ Approve & Authorize Submission
+                </button>
+              </div>
+            </div>
+
+            <!-- Notice n2 (hidden) -->
+            <div id="notice-n2" style="display:none;">
+              <div class="nd-header">
+                <div class="nd-top">
+                  <div class="nd-title">Income Tax Demand Notice — AY 2023-24 Section 143(1)</div>
+                  <div class="nd-actions">
+                    <button class="btn btn-secondary" style="font-size:12px;padding:7px 12px;" onclick="showToast('Downloading notice PDF…','info')">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                      Download
+                    </button>
+                  </div>
+                </div>
+                <div class="nd-meta-pills">
+                  <span class="nd-meta-pill" style="background:rgba(249,115,22,.07);border-color:rgba(249,115,22,.2);color:var(--a500);">High Priority</span>
+                  <span class="nd-meta-pill">Income Tax · Section 143(1)</span>
+                  <span class="nd-meta-pill">Received: Jan 10, 2026</span>
+                  <span class="nd-meta-pill success" style="background:rgba(34,197,94,.07);border-color:rgba(34,197,94,.2);color:var(--s600);">Response Filed</span>
+                </div>
+              </div>
+              <div class="ca-handling-card">
+                <div class="chc-head">
+                  <div class="chc-av" style="background:linear-gradient(135deg,#F97316,#EA580C)">AS</div>
+                  <div>
+                    <div class="chc-name">Amit Sharma handled this notice</div>
+                    <div class="chc-role">CA Associate · Joshi & Associates</div>
+                  </div>
+                </div>
+                <div class="chc-status">
+                  <span style="flex-shrink:0;font-weight:500;color:var(--s600);">Response submitted — Feb 5, 2026</span>
+                  <div class="chc-prog"><div class="chc-prog-fill" style="width:100%;background:var(--s400)"></div></div>
+                  <span class="chc-prog-pct" style="color:var(--s600);">100%</span>
+                </div>
+              </div>
+              <div class="notice-details-grid">
+                <div class="detail-field"><label>Notice Type</label><div class="df-val">Intimation u/s 143(1)</div></div>
+                <div class="detail-field"><label>Authority</label><div class="df-val">CBDT · CPC Bangalore</div></div>
+                <div class="detail-field"><label>Assessment Year</label><div class="df-val">AY 2023-24</div></div>
+                <div class="detail-field"><label>Demand Amount</label><div class="df-val danger">₹1,18,500</div></div>
+                <div class="detail-field"><label>Date Received</label><div class="df-val">January 10, 2026</div></div>
+                <div class="detail-field"><label>Response Filed</label><div class="df-val" style="color:var(--s600)">February 5, 2026</div></div>
+              </div>
+              <div class="notice-body-box">
+                <div class="nbb-label">Notice Summary</div>
+                <div class="nbb-text">An intimation under Section 143(1) has been issued for AY 2023-24 raising a tax demand of ₹1,18,500 due to a mismatch in TDS credit claimed vs TDS credit as per 26AS. The response has been filed by Amit Sharma, providing reconciliation of the TDS credit discrepancy and supporting documentation.</div>
+              </div>
+            </div>
+
+            <!-- Notice n3 (hidden) -->
+            <div id="notice-n3" style="display:none;">
+              <div class="nd-header">
+                <div class="nd-top">
+                  <div class="nd-title">TDS Short Deduction — Q2 FY 2024-25</div>
+                </div>
+                <div class="nd-meta-pills">
+                  <span class="nd-meta-pill warn">Medium Priority</span>
+                  <span class="nd-meta-pill">TDS · 26A</span>
+                  <span class="nd-meta-pill">Received: Dec 5, 2025</span>
+                  <span class="nd-meta-pill success" style="background:rgba(34,197,94,.07);border-color:rgba(34,197,94,.2);color:var(--s600);">Resolved</span>
+                </div>
+              </div>
+              <div class="notice-details-grid">
+                <div class="detail-field"><label>Notice Type</label><div class="df-val">Short Deduction Demand</div></div>
+                <div class="detail-field"><label>Authority</label><div class="df-val">TRACES — TDS Wing</div></div>
+                <div class="detail-field"><label>Period</label><div class="df-val">Q2 FY 2024-25 (Jul–Sep 2024)</div></div>
+                <div class="detail-field"><label>Demand Amount</label><div class="df-val danger">₹42,000</div></div>
+                <div class="detail-field"><label>Date Received</label><div class="df-val">December 5, 2025</div></div>
+                <div class="detail-field"><label>Status</label><div class="df-val" style="color:var(--s600)">Demand paid & closed</div></div>
+              </div>
+              <div class="notice-body-box">
+                <div class="nbb-label">Notice Summary</div>
+                <div class="nbb-text">TRACES raised a short deduction demand of ₹42,000 for Q2 FY 2024-25. The demand arose due to TDS deducted at a lower rate on certain contractor payments. Priya Kumar paid the demand on December 18, 2025 along with applicable interest. The notice is now closed.</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ INVOICES ══ -->
+    <div class="screen" id="screen-invoices" style="overflow:hidden;flex-direction:column;">
+
+      <!-- Top Metrics -->
+      <div class="inv-metrics">
+        <div class="inv-metric">
+          <div class="inv-metric-val green">₹1.84L</div>
+          <div class="inv-metric-lbl">Total Billed (FY25-26)</div>
+        </div>
+        <div class="inv-metric">
+          <div class="inv-metric-val green">₹1.42L</div>
+          <div class="inv-metric-lbl">Amount Received</div>
+        </div>
+        <div class="inv-metric">
+          <div class="inv-metric-val orange">₹42,000</div>
+          <div class="inv-metric-lbl">Outstanding</div>
+        </div>
+        <div class="inv-metric">
+          <div class="inv-metric-val red">₹0</div>
+          <div class="inv-metric-lbl">Overdue</div>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="inv-body">
+
+        <!-- Filter chips -->
+        <div class="inv-filter-row">
+          <button class="inv-chip active" onclick="filterInvoices(this,'all')">All</button>
+          <button class="inv-chip" onclick="filterInvoices(this,'task')">Task Invoices</button>
+          <button class="inv-chip" onclick="filterInvoices(this,'retainer')">Retainer</button>
+          <button class="inv-chip" onclick="filterInvoices(this,'pending')">Pending</button>
+        </div>
+
+        <!-- Retainer Agreements -->
+        <div class="inv-group" data-group="retainer">
+          <div class="inv-section-label">Retainer Agreements</div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+
+            <div class="retainer-card">
+              <div class="rc-left">
+                <div class="rc-title">GST Filing Retainer</div>
+                <div class="rc-sub">Monthly · Auto-invoice</div>
+                <div class="rc-next">Next invoice: Apr 1, 2026 · Annual total: ₹96,000</div>
+              </div>
+              <div class="rc-right">
+                <div class="rc-amount">₹8,000</div>
+                <div class="rc-freq">per month</div>
+                <div class="rc-status">Active</div>
+              </div>
+            </div>
+
+            <div class="retainer-card">
+              <div class="rc-left">
+                <div class="rc-title">TDS &amp; Payroll Compliance</div>
+                <div class="rc-sub">Quarterly · Manual invoice</div>
+                <div class="rc-next">Next invoice: Jun 30, 2026 · Annual total: ₹60,000</div>
+              </div>
+              <div class="rc-right">
+                <div class="rc-amount">₹15,000</div>
+                <div class="rc-freq">per quarter</div>
+                <div class="rc-status">Active</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Task Invoices -->
+        <div class="inv-group" data-group="task">
+          <div class="inv-section-label">Task Invoices</div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+
+            <!-- Invoice 1 — Pending -->
+            <div class="task-inv-card" data-inv-status="pending">
+              <div class="tic-header">
+                <div class="tic-left">
+                  <div class="tic-inv-no">INV-MI-2026-003</div>
+                  <div class="tic-dates">Issued: Mar 25, 2026 &nbsp;·&nbsp; Due: Apr 10, 2026</div>
+                </div>
+                <div class="tic-right">
+                  <div class="tic-amount">₹18,500</div>
+                  <div class="tic-incl">incl. GST</div>
+                  <div class="tic-status pending">Pending</div>
+                </div>
+              </div>
+              <div class="tic-divider"></div>
+              <div class="tic-footer">
+                <div>
+                  <div class="tic-tasks">
+                    <span class="tic-task-link" onclick="nav('tasks',document.querySelector('[data-screen=tasks]'))">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                      MI-001 · GSTR-9 Annual Return
+                    </span>
+                  </div>
+                  <div class="tic-breakdown" style="margin-top:8px;">Fixed: ₹12,500 &nbsp;·&nbsp; Variable: ₹4,000 &nbsp;·&nbsp; Expenses: ₹2,000</div>
+                </div>
+                <button class="tic-download" onclick="showToast('Downloading INV-MI-2026-003.pdf…','info')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Download PDF
+                </button>
+              </div>
+            </div>
+
+            <!-- Invoice 2 — Paid -->
+            <div class="task-inv-card" data-inv-status="paid">
+              <div class="tic-header">
+                <div class="tic-left">
+                  <div class="tic-inv-no">INV-MI-2026-002</div>
+                  <div class="tic-dates">Issued: Feb 28, 2026 &nbsp;·&nbsp; Paid: Mar 10, 2026</div>
+                </div>
+                <div class="tic-right">
+                  <div class="tic-amount">₹11,800</div>
+                  <div class="tic-incl">incl. GST</div>
+                  <div class="tic-status paid">Paid</div>
+                </div>
+              </div>
+              <div class="tic-divider"></div>
+              <div class="tic-footer">
+                <div>
+                  <div class="tic-tasks">
+                    <span class="tic-task-link" onclick="nav('tasks',document.querySelector('[data-screen=tasks]'))">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                      MI-002 · GSTR-3B Feb 2026
+                    </span>
+                    <span class="tic-task-link" onclick="nav('tasks',document.querySelector('[data-screen=tasks]'))">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                      MI-003 · TDS Q3 Return
+                    </span>
+                  </div>
+                  <div class="tic-breakdown" style="margin-top:8px;">Fixed: ₹8,000 &nbsp;·&nbsp; Variable: ₹2,500 &nbsp;·&nbsp; Expenses: ₹1,300</div>
+                </div>
+                <button class="tic-download" onclick="showToast('Downloading INV-MI-2026-002.pdf…','info')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Download PDF
+                </button>
+              </div>
+            </div>
+
+            <!-- Invoice 3 — Paid -->
+            <div class="task-inv-card" data-inv-status="paid">
+              <div class="tic-header">
+                <div class="tic-left">
+                  <div class="tic-inv-no">INV-MI-2026-001</div>
+                  <div class="tic-dates">Issued: Jan 31, 2026 &nbsp;·&nbsp; Paid: Feb 8, 2026</div>
+                </div>
+                <div class="tic-right">
+                  <div class="tic-amount">₹9,440</div>
+                  <div class="tic-incl">incl. GST</div>
+                  <div class="tic-status paid">Paid</div>
+                </div>
+              </div>
+              <div class="tic-divider"></div>
+              <div class="tic-footer">
+                <div>
+                  <div class="tic-tasks">
+                    <span class="tic-task-link" onclick="nav('tasks',document.querySelector('[data-screen=tasks]'))">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                      MI-004 · Income Tax Demand Response
+                    </span>
+                  </div>
+                  <div class="tic-breakdown" style="margin-top:8px;">Fixed: ₹7,000 &nbsp;·&nbsp; Variable: ₹1,500 &nbsp;·&nbsp; Expenses: ₹940</div>
+                </div>
+                <button class="tic-download" onclick="showToast('Downloading INV-MI-2026-001.pdf…','info')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Download PDF
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+<!-- ══════════════════════════════════════
+     LOG NOTICE MODAL
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="logNoticeModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Log a New Notice</h3>
+      <button class="modal-close" onclick="closeLogModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--n500);background:var(--p50);border:1px solid rgba(37,99,235,.15);border-radius:var(--r-lg);padding:10px 12px;margin-bottom:18px;line-height:1.5;">
+        Received a physical or email notice directly from a tax authority? Log it here so your CA can take immediate action.
+      </p>
+      <div class="form-group">
+        <label class="form-label">Notice Title <span>*</span></label>
+        <input class="form-input" type="text" placeholder="e.g. GST SCN for FY 2024-25" />
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">Notice Type <span>*</span></label>
+          <select class="form-select">
+            <option value="">Select type…</option>
+            <option>GST Notice / SCN</option>
+            <option>Income Tax Notice</option>
+            <option>TDS Demand</option>
+            <option>ROC / MCA Notice</option>
+            <option>SEBI Notice</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Issuing Authority <span>*</span></label>
+          <input class="form-input" type="text" placeholder="e.g. CBIC, CBDT, TRACES" />
+        </div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">Date Received <span>*</span></label>
+          <input class="form-input" type="date" value="2026-04-02" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Response Deadline</label>
+          <input class="form-input" type="date" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Reference / Notice Number</label>
+        <input class="form-input" type="text" placeholder="e.g. GSTIN/SCN/2024-25/0342" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Amount in Question (if any)</label>
+        <input class="form-input" type="text" placeholder="e.g. ₹1,50,000" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Brief Description</label>
+        <textarea class="form-input" rows="3" placeholder="Briefly describe what the notice is about…" style="resize:vertical;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Attach Notice Document</label>
+        <div class="modal-upload-zone" onclick="showToast('File upload UI ready — connect backend to enable','info')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <p>Click to upload scan or photo of notice</p>
+          <span>PDF, JPG, PNG · Max 10MB</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeLogModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitNotice()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Submit to CA Team
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     TOAST CONTAINER
+══════════════════════════════════════ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ══════════════════════════════════════
+//   NAVIGATION
+// ══════════════════════════════════════
+const pageTitles = {dashboard:'Dashboard',inbox:'Inbox',tasks:'Tasks',notices:'Notices',invoices:'Invoices'};
+
+function nav(screenId, btn) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const screen = document.getElementById('screen-' + screenId);
+  if (screen) screen.classList.add('active');
+  if (btn) btn.classList.add('active');
+  document.getElementById('pageTitle').textContent = pageTitles[screenId] || screenId;
+}
+
+// ══════════════════════════════════════
+//   INVOICE FILTER
+// ══════════════════════════════════════
+function filterInvoices(btn, filter) {
+  document.querySelectorAll('.inv-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  const retainerGroup = document.querySelector('.inv-group[data-group="retainer"]');
+  const taskGroup = document.querySelector('.inv-group[data-group="task"]');
+  const taskCards = document.querySelectorAll('.task-inv-card');
+
+  if (filter === 'all') {
+    retainerGroup.style.display = '';
+    taskGroup.style.display = '';
+    taskCards.forEach(c => c.style.display = '');
+  } else if (filter === 'retainer') {
+    retainerGroup.style.display = '';
+    taskGroup.style.display = 'none';
+  } else if (filter === 'task') {
+    retainerGroup.style.display = 'none';
+    taskGroup.style.display = '';
+    taskCards.forEach(c => c.style.display = '');
+  } else if (filter === 'pending') {
+    retainerGroup.style.display = 'none';
+    taskGroup.style.display = '';
+    taskCards.forEach(c => {
+      c.style.display = c.getAttribute('data-inv-status') === 'pending' ? '' : 'none';
+    });
+  }
+}
+
+// ══════════════════════════════════════
+//   TASK TABS
+// ══════════════════════════════════════
+function switchTaskTab(btn, tabId) {
+  document.querySelectorAll('.tasks-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.task-tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  const tab = document.getElementById(tabId);
+  if (tab) tab.classList.add('active');
+}
+
+// ══════════════════════════════════════
+//   TASK DETAIL
+// ══════════════════════════════════════
+function openTaskDetail(taskId) {
+  document.getElementById('taskListView').style.display = 'none';
+  document.querySelectorAll('.task-detail-wrap').forEach(d => d.classList.remove('active'));
+  const detail = document.getElementById('taskDetail-' + taskId);
+  if (detail) detail.classList.add('active');
+}
+
+function closeTaskDetail() {
+  document.getElementById('taskListView').style.display = 'flex';
+  document.querySelectorAll('.task-detail-wrap').forEach(d => d.classList.remove('active'));
+}
+
+// ══════════════════════════════════════
+//   POST COMMENT
+// ══════════════════════════════════════
+function postComment(taskId) {
+  const inp = document.getElementById('commentInput-' + taskId);
+  const text = inp?.value?.trim();
+  if (!text) return;
+  inp.value = '';
+  const container = document.getElementById('comments-' + taskId);
+  if (!container) return;
+  const div = document.createElement('div');
+  div.className = 'comment-item';
+  div.innerHTML = `
+    <div class="comment-av-sm" style="background:linear-gradient(135deg,var(--a400),var(--a500))">RM</div>
+    <div class="comment-body">
+      <div class="comment-meta">Rakesh Mehta · Just now</div>
+      <div class="comment-text">${escHtml(text)}</div>
+    </div>
+  `;
+  container.appendChild(div);
+  showToast('Comment sent to your CA','success');
+}
+
+// ══════════════════════════════════════
+//   APPROVE TASK
+// ══════════════════════════════════════
+function approveTask(id) {
+  // Update task detail status pill if present
+  const sideStatus = document.getElementById('t2-side-status');
+  if (sideStatus) { sideStatus.className = 'status-pill done'; sideStatus.textContent = 'Approved'; }
+  // Update table row status
+  const tableRows = document.querySelectorAll('#current-tasks .task-table tbody tr');
+  tableRows.forEach(row => {
+    if (row.querySelector('.tt-sub') && row.querySelector('.tt-sub').textContent.includes('T-083')) {
+      const pill = row.querySelector('.status-pill');
+      if (pill) { pill.className = 'status-pill done'; pill.textContent = 'Completed'; }
+    }
+  });
+  showToast('Reply approved! Your CA will submit today.','success');
+}
+
+// ══════════════════════════════════════
+//   MOCK FILE UPLOAD
+// ══════════════════════════════════════
+const mockFiles = [
+  {name:'ITC_Reconciliation_FY2425.xlsx', size:'142 KB'},
+  {name:'HSN_Summary_2024-25.pdf', size:'87 KB'},
+  {name:'Credit_Notes_Register.xlsx', size:'64 KB'},
+];
+let uploadedCount = {};
+
+function mockUpload(taskId) {
+  if (!uploadedCount[taskId]) uploadedCount[taskId] = 0;
+  const idx = uploadedCount[taskId] % mockFiles.length;
+  const file = mockFiles[idx];
+  uploadedCount[taskId]++;
+  const container = document.getElementById('uploads-' + taskId);
+  const div = document.createElement('div');
+  div.className = 'uploaded-file';
+  div.innerHTML = `
+    <div class="uf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+    <div class="uf-name">${file.name}</div>
+    <div class="uf-size">${file.size}</div>
+    <button class="uf-remove" onclick="this.parentElement.remove();showToast('File removed','info')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  `;
+  container.appendChild(div);
+  showToast('File "' + file.name + '" uploaded','success');
+}
+
+function submitDocs(taskId) {
+  const container = document.getElementById('uploads-' + taskId);
+  const count = container ? container.children.length : 0;
+  if (count === 0) {
+    showToast('Please upload at least one document first','warn');
+    return;
+  }
+  showToast('Documents submitted to Priya Kumar! She will review shortly.','success');
+}
+
+// ══════════════════════════════════════
+//   INBOX / CHAT
+// ══════════════════════════════════════
+const msgData = {
+  m1: {name:'Priya Kumar', initials:'PK', color:'linear-gradient(135deg,#EF4444,#DC2626)', status:'Senior CA · Online'},
+  m2: {name:'Finaira Team', initials:'FN', color:'linear-gradient(135deg,#2563EB,#4F46E5)', status:'System · Notifications'},
+  m3: {name:'Priya Kumar', initials:'PK', color:'linear-gradient(135deg,#EF4444,#DC2626)', status:'Senior CA · Online'},
+  m4: {name:'Amit Sharma', initials:'AS', color:'linear-gradient(135deg,#F97316,#EA580C)', status:'CA Associate · Away'},
+  m5: {name:'Priya Kumar', initials:'PK', color:'linear-gradient(135deg,#EF4444,#DC2626)', status:'Senior CA · Online'},
+};
+
+function openMsg(el, msgId) {
+  document.querySelectorAll('.msg-item').forEach(m => m.classList.remove('active'));
+  el.classList.add('active');
+  el.classList.remove('unread');
+  const dot = el.querySelector('.unread-dot');
+  if (dot) dot.remove();
+  const d = msgData[msgId];
+  if (!d) return;
+  const header = document.getElementById('chatHeader');
+  header.querySelector('.chat-av').textContent = d.initials;
+  header.querySelector('.chat-av').style.background = d.color;
+  header.querySelector('.chat-name').textContent = d.name;
+  header.querySelector('.chat-status').textContent = d.status;
+}
+
+function handleChatEnter(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMsg();
+  }
+}
+
+function sendMsg() {
+  const input = document.getElementById('chatInputBox');
+  const text = input.value.trim();
+  if (!text) return;
+  const container = document.getElementById('chatMessages');
+  const wrap = document.createElement('div');
+  wrap.className = 'msg-bubble-wrap client';
+  wrap.innerHTML = `
+    <div class="bubble-av" style="background:linear-gradient(135deg,var(--a400),var(--a500))">RM</div>
+    <div>
+      <div class="msg-bubble client-msg">${escHtml(text)}</div>
+      <div class="bubble-meta client-meta">Just now · ✓</div>
+    </div>
+  `;
+  container.appendChild(wrap);
+  input.value = '';
+  container.scrollTop = container.scrollHeight;
+  // Auto-reply after 1.5s
+  setTimeout(() => {
+    const reply = document.createElement('div');
+    reply.className = 'msg-bubble-wrap';
+    reply.innerHTML = `
+      <div class="bubble-av" style="background:linear-gradient(135deg,#EF4444,#DC2626)">PK</div>
+      <div>
+        <div class="msg-bubble firm">Thank you, Rakesh ji. I'll review and get back to you shortly. 🙏</div>
+        <div class="bubble-meta">Just now</div>
+      </div>
+    `;
+    container.appendChild(reply);
+    container.scrollTop = container.scrollHeight;
+  }, 1500);
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ══════════════════════════════════════
+//   NOTICES
+// ══════════════════════════════════════
+function openNotice(el, noticeId) {
+  document.querySelectorAll('.notice-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('[id^="notice-"]').forEach(n => n.style.display = 'none');
+  const nd = document.getElementById('notice-' + noticeId);
+  if (nd) nd.style.display = '';
+}
+
+// ══════════════════════════════════════
+//   LOG NOTICE MODAL
+// ══════════════════════════════════════
+function openLogModal() {
+  document.getElementById('logNoticeModal').classList.add('open');
+}
+function closeLogModal() {
+  document.getElementById('logNoticeModal').classList.remove('open');
+}
+function submitNotice() {
+  closeLogModal();
+  showToast('Notice logged! Your CA team will review it shortly.','success');
+}
+
+// ══════════════════════════════════════
+//   TOAST
+// ══════════════════════════════════════
+function showToast(msg, type) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast' + (type === 'success' ? ' success' : type === 'warn' ? ' warn' : '');
+  const icons = {
+    success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>',
+    warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>',
+    info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+  };
+  toast.innerHTML = (icons[type] || icons.info) + escHtml(msg);
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3500);
+}
+
+// Close modal on overlay click
+document.getElementById('logNoticeModal').addEventListener('click', function(e) {
+  if (e.target === this) closeLogModal();
+});
+</script>
+</body>
+</html>
