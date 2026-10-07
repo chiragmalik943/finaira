@@ -245,6 +245,15 @@
     .sidebar.collapsed .sb-nav { overflow: visible; }
     .sidebar.collapsed .nav-item { overflow: visible; }
 
+    /* Collapsed sidebar — drop the left/right padding and the icon/label
+       gap so the icon (the only thing left with any width) is centered
+       in the menu column, instead of sitting off to the left. */
+    .sidebar.collapsed .nav-item {
+      padding: 8px 0;
+      justify-content: center;
+      gap: 0;
+    }
+
     .nav-badge {
       margin-left: auto;
       background: var(--d400);
@@ -260,6 +269,11 @@
 
     .sidebar.collapsed .nav-badge {
       opacity: 0;
+      margin-left: 0;
+      min-width: 0;
+      max-width: 0;
+      padding: 0;
+      overflow: hidden;
     }
 
     .sb-foot {
@@ -3167,10 +3181,12 @@
 
     .dt-popover {
       display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      margin-top: 6px;
+      /* Positioned in JS (see dtInit) with position:fixed, computed from
+         the filter button's real screen position — this keeps the panel
+         from being clipped by the table's horizontal-scroll wrapper (or
+         any other overflow ancestor) and lets it always paint above the
+         rest of the page. */
+      position: fixed;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: var(--r-lg);
@@ -3178,7 +3194,7 @@
       padding: 10px;
       min-width: 190px;
       max-width: 240px;
-      z-index: 60;
+      z-index: 9500;
       font-weight: normal;
       text-transform: none;
       letter-spacing: normal;
@@ -7768,8 +7784,8 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: none;
-      border: 1px solid transparent;
+      background: var(--card);
+      border: 1px solid var(--border);
       padding: 3px 6px;
       margin: -3px -6px;
       border-radius: var(--r-md);
@@ -7780,7 +7796,7 @@
       transition: background 120ms, border-color 120ms;
     }
 
-    .team-assign-trigger:hover { background: var(--n50); border-color: var(--border); }
+    .team-assign-trigger:hover { background: var(--n50); border-color: var(--n300); }
     .team-assign-trigger .assignee-name-lbl { font-weight: 500; }
     .team-assign-caret { width: 11px; height: 11px; color: var(--n300); flex-shrink: 0; }
 
@@ -7862,18 +7878,24 @@
 
     /* ─────────────────────────────────────────────────
        Global tooltip system — [data-tip]
+       The tooltip element itself (.gtip) is a single node
+       portaled to <body> and positioned with JS (see the
+       "GLOBAL TOOLTIPS" script section). Rendering it as a
+       fixed-position body child — rather than a per-element
+       ::after/::before pseudo-element — means it can never be
+       clipped by a scrolling/overflow ancestor (a sticky table
+       header, a card, the mac-window frame, …) and always
+       paints above every other layer, including modals.
        Default placement: above, centered. Variants via
        [data-tip-pos="bottom|left"], plus a dedicated
-       right-placement for the collapsed sidebar.
+       right-placement for the collapsed sidebar — all resolved
+       in JS.
        ───────────────────────────────────────────────── */
-    [data-tip] { position: relative; }
-
-    [data-tip]::after {
-      content: attr(data-tip);
-      position: absolute;
-      left: 50%;
-      bottom: calc(100% + 8px);
-      transform: translate(-50%, 4px);
+    .gtip {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 99999;
       background: var(--n900);
       color: #fff;
       font-size: 11px;
@@ -7885,108 +7907,43 @@
       pointer-events: none;
       opacity: 0;
       visibility: hidden;
+      transform: scale(.98);
       transition: opacity 120ms ease, transform 120ms ease;
-      z-index: 10000;
       box-shadow: 0 4px 14px rgba(31, 38, 51, .22);
-      /* Collapsed to a 0x0 box at rest so the (invisible) tooltip never
-         inflates an ancestor's scrollable width; restored on hover/focus. */
-      max-width: 0;
-      max-height: 0;
-      padding-left: 0;
-      padding-right: 0;
-      overflow: hidden;
     }
-    [data-tip]::before {
-      content: '';
-      position: absolute;
-      left: 50%;
-      bottom: calc(100% + 3px);
-      transform: translate(-50%, 4px);
-      border: 5px solid transparent;
-      border-top-color: var(--n900);
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      transition: opacity 120ms ease, transform 120ms ease;
-      z-index: 10000;
-      border-width: 0;
-    }
-    [data-tip]:hover::after, [data-tip]:hover::before,
-    [data-tip]:focus-visible::after, [data-tip]:focus-visible::before {
+    .gtip.show {
       opacity: 1;
       visibility: visible;
-      transform: translate(-50%, 0);
+      transform: scale(1);
     }
-    [data-tip]:hover::after, [data-tip]:focus-visible::after {
-      max-width: none;
-      max-height: none;
-      padding-left: 9px;
-      padding-right: 9px;
-      overflow: visible;
+    .gtip::after {
+      content: '';
+      position: absolute;
+      border: 5px solid transparent;
     }
-    [data-tip]:hover::before, [data-tip]:focus-visible::before {
-      border-width: 5px;
+    .gtip[data-arrow="bottom"]::after {
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-top-color: var(--n900);
     }
-
-    [data-tip][data-tip-pos="bottom"]::after {
-      bottom: auto;
-      top: calc(100% + 8px);
-      transform: translate(-50%, -4px);
-    }
-    [data-tip][data-tip-pos="bottom"]::before {
-      bottom: auto;
-      top: calc(100% + 3px);
-      transform: translate(-50%, -4px);
-      border-top-color: transparent;
+    .gtip[data-arrow="top"]::after {
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
       border-bottom-color: var(--n900);
     }
-    [data-tip][data-tip-pos="bottom"]:hover::after, [data-tip][data-tip-pos="bottom"]:hover::before {
-      transform: translate(-50%, 0);
-    }
-
-    [data-tip][data-tip-pos="left"]::after {
-      left: auto;
-      right: calc(100% + 8px);
-      bottom: auto;
+    .gtip[data-arrow="left"]::after {
+      right: 100%;
       top: 50%;
-      transform: translate(4px, -50%);
-    }
-    [data-tip][data-tip-pos="left"]::before {
-      left: auto;
-      right: calc(100% + 3px);
-      bottom: auto;
-      top: 50%;
-      transform: translate(4px, -50%);
-      border-top-color: transparent;
-      border-left-color: var(--n900);
-    }
-    [data-tip][data-tip-pos="left"]:hover::after, [data-tip][data-tip-pos="left"]:hover::before {
-      transform: translate(0, -50%);
-    }
-
-    /* Collapsed sidebar — tooltip pops out to the right of the icon */
-    .sidebar.collapsed .nav-item[data-tip]::after {
-      left: calc(100% + 10px);
-      bottom: auto;
-      top: 50%;
-      transform: translate(-4px, -50%);
-    }
-    .sidebar.collapsed .nav-item[data-tip]::before {
-      left: calc(100% + 3px);
-      bottom: auto;
-      top: 50%;
-      transform: translate(-4px, -50%);
-      border-top-color: transparent;
+      transform: translateY(-50%);
       border-right-color: var(--n900);
     }
-    .sidebar.collapsed .nav-item[data-tip]:hover::after,
-    .sidebar.collapsed .nav-item[data-tip]:hover::before {
-      transform: translate(0, -50%);
-    }
-    /* Expanded sidebar already shows the text label — suppress the tooltip */
-    .sidebar:not(.collapsed) .nav-item[data-tip]::after,
-    .sidebar:not(.collapsed) .nav-item[data-tip]::before {
-      display: none;
+    .gtip[data-arrow="right"]::after {
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      border-left-color: var(--n900);
     }
 
     /* Window controls — standard Windows 11 sizing */
@@ -18004,6 +17961,93 @@ Mehta Industries`;
       }
     });
 
+    // ════════════════════════════════════════
+    // GLOBAL TOOLTIPS — [data-tip]
+    // A single tooltip element, portaled to <body> and positioned
+    // in JS from the trigger's real screen position. This is what
+    // keeps a tooltip from ever being clipped by a scrolling/
+    // overflow ancestor (sticky table headers, cards, the
+    // mac-window frame, …) and guarantees it always paints above
+    // every other layer, modals included.
+    // ════════════════════════════════════════
+    (function () {
+      let tipEl = null;
+      let activeTarget = null;
+
+      function ensureTip() {
+        if (!tipEl) {
+          tipEl = document.createElement('div');
+          tipEl.className = 'gtip';
+          document.body.appendChild(tipEl);
+        }
+        return tipEl;
+      }
+
+      function place(target) {
+        const tip = ensureTip();
+        const gap = 8;
+        const r = target.getBoundingClientRect();
+        const pos = target.closest('.sidebar.collapsed .nav-item')
+          ? 'right'
+          : (target.getAttribute('data-tip-pos') || 'top');
+
+        const tw = tip.offsetWidth, th = tip.offsetHeight;
+        let left, top, arrow;
+        if (pos === 'right') {
+          left = r.right + 10; top = r.top + r.height / 2 - th / 2; arrow = 'left';
+        } else if (pos === 'left') {
+          left = r.left - tw - gap; top = r.top + r.height / 2 - th / 2; arrow = 'right';
+        } else if (pos === 'bottom') {
+          left = r.left + r.width / 2 - tw / 2; top = r.bottom + gap; arrow = 'top';
+        } else {
+          left = r.left + r.width / 2 - tw / 2; top = r.top - th - gap; arrow = 'bottom';
+        }
+
+        left = Math.max(4, Math.min(left, window.innerWidth - tw - 4));
+        top = Math.max(4, Math.min(top, window.innerHeight - th - 4));
+        tip.style.left = left + 'px';
+        tip.style.top = top + 'px';
+        tip.setAttribute('data-arrow', arrow);
+      }
+
+      function showTip(target) {
+        // Expanded sidebar already shows the text label — no flyout tooltip needed
+        if (target.closest('.sidebar:not(.collapsed) .nav-item')) return;
+        const text = target.getAttribute('data-tip');
+        if (!text) return;
+        const tip = ensureTip();
+        tip.textContent = text;
+        activeTarget = target;
+        place(target);
+        tip.classList.add('show');
+      }
+
+      function hideTip() {
+        if (tipEl) tipEl.classList.remove('show');
+        activeTarget = null;
+      }
+
+      document.addEventListener('mouseover', (e) => {
+        const target = e.target.closest('[data-tip]');
+        if (target) showTip(target);
+      });
+      document.addEventListener('mouseout', (e) => {
+        const target = e.target.closest('[data-tip]');
+        if (target && (!e.relatedTarget || !target.contains(e.relatedTarget))) hideTip();
+      });
+      document.addEventListener('focusin', (e) => {
+        const target = e.target.closest('[data-tip]');
+        if (target) showTip(target);
+      });
+      document.addEventListener('focusout', (e) => {
+        if (activeTarget) hideTip();
+      });
+      window.addEventListener('scroll', () => { if (activeTarget) place(activeTarget); }, true);
+      window.addEventListener('resize', hideTip);
+      document.addEventListener('mousedown', hideTip, true);
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hideTip(); });
+    })();
+
     // ── CONTEXT MENUS ────────────────────────
     let _openCtxMenu = null;
     window._ctxTaskId = 't1';
@@ -18426,6 +18470,28 @@ Mehta Industries`;
     const DT_FILTER_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>';
     const DT_SORT_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 15 12 20 17 15"/><polyline points="7 9 12 4 17 9"/></svg>';
 
+    // Column filter popover is position:fixed (see .dt-popover CSS) so it
+    // never gets clipped by the table's horizontal-scroll wrapper. Position
+    // it here from the header cell's real screen position, and keep it
+    // pinned to that header while the page/table scrolls or resizes.
+    function positionDtPopover(pop, anchor) {
+      const r = anchor.getBoundingClientRect();
+      const pw = pop.offsetWidth || 220, ph = pop.offsetHeight || 260;
+      const left = Math.max(8, Math.min(r.left, window.innerWidth - pw - 8));
+      let top = r.bottom + 6;
+      if (top + ph > window.innerHeight - 8) top = Math.max(8, r.top - ph - 6);
+      pop.style.left = left + 'px';
+      pop.style.top = top + 'px';
+    }
+    document.addEventListener('scroll', () => {
+      const openPop = document.querySelector('.dt-popover.show');
+      if (openPop && openPop._dtAnchor) positionDtPopover(openPop, openPop._dtAnchor);
+    }, true);
+    window.addEventListener('resize', () => {
+      const openPop = document.querySelector('.dt-popover.show');
+      if (openPop && openPop._dtAnchor) positionDtPopover(openPop, openPop._dtAnchor);
+    });
+
     function dtInit(table) {
       if (!table || table.dataset.dtReady) return;
       table.dataset.dtReady = '1';
@@ -18489,7 +18555,11 @@ Mehta Industries`;
           e.stopPropagation();
           const wasOpen = pop.classList.contains('show');
           document.querySelectorAll('.dt-popover.show').forEach(p => p.classList.remove('show'));
-          if (!wasOpen) pop.classList.add('show');
+          if (!wasOpen) {
+            pop.classList.add('show');
+            pop._dtAnchor = th;
+            positionDtPopover(pop, th);
+          }
         });
         pop.addEventListener('click', e => e.stopPropagation());
 
